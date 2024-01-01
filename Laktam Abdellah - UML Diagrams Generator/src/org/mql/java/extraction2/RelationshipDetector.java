@@ -16,22 +16,39 @@ public class RelationshipDetector {
 	// parameters for
 	public static void detectRepationShips(List<Type> types) {
 		for (Type type : types) {
-			Field fields[] = type.getObjectClass().getDeclaredFields();
+			java.lang.Class<?> c = type.getObjectClass();
+			Field fields[] = c.getDeclaredFields();
+			//agregation : if a field's type is complex 
 			for (Field f : fields) {
-				// f.get(type).getClass().isPrimitive() : get the class of the field's object
-				
-				//need to redo this       !!!!!!!!! !!!!!!!!!!!!!!!!!!!!        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+				// need to check if accessible before making it true and return it to its
+				// default value
 				f.setAccessible(true);
 				try {
 					java.lang.Class<?> fieldClass = f.getType();
 					if (!fieldClass.isPrimitive() && !fieldClass.equals(String.class)) {
-						type.addRelationship(new Relationship("agregation", (Class) type, new Class(fieldClass)));
+						type.addRelationship(new Relationship("agregation", type, new Class(fieldClass)));
 					}
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
-
 			}
+			//Inheritance and implementation
+			java.lang.Class<?> interfaces[] = c.getInterfaces();
+			String relationship = "";
+			if("class".equals(type.getType())) {
+				if(!Object.class.equals(c.getSuperclass())) {
+					type.addRelationship(new Relationship("inheritence", type, new Class(c.getSuperclass())));
+				}
+				relationship = "implementation";
+			}else if ("interface".equals(type.getType())) {
+				relationship = "inheritence";
+			}
+			for (java.lang.Class<?>  i : interfaces) {
+				type.addRelationship(new Relationship(relationship, type, new Class(i)));
+			}
+			//dependency : detect it if a method has a return type or a parameter of an external class
+			
 		}
 	}
 }
