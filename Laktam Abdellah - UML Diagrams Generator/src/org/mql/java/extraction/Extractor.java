@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
+import org.mql.java.xml.Parser;
+
 public class Extractor {
 	private String workspace;
 
@@ -24,33 +26,20 @@ public class Extractor {
 			File projectBin = new File(projectFile + File.separator + "bin");
 			// extract all files
 			List<File> javaFiles = new Vector<File>();
-			// get Files
+			// get class Files
 			extractFiles(projectBin, javaFiles);
 			// load them
 			List<Class<?>> classFiles = Loader.loadClasses(projectBin, javaFiles);
-			// get defined packages
-			Package javaPackages[] = Loader.getDefinedPackages();
-			// create tree
+
+			// create project tree
+			//must edit ot get only used packages !!!!!
 			List<PackageType> packages = createPackagesTree(projectBin.listFiles());
 			fillPackages(packages, classFiles);
-			packages.forEach(System.out::println);
-			//
-//			List<PackageType> packages = createPackages(javaPackages);
-//			fillPackages(packages, classFiles);
-//			nestPackages(packages);
-//			project.addPackages(packages);
+			project.addPackages(packages);
 
 			// extract relationships
 //			extractRelationships(packages);
 			return project;
-//			System.out.println(classList.get(0).getDeclaredFields()[0].getName());
-//			Set<Package> javaPackages = new HashSet<>();
-//			for (Class<?> c : classList) {
-//				javaPackages.add(c.getPackage());
-//			}
-//			for (Package p : javaPackages) {
-//				project.addPackage(new Package(p.getName()));
-//			}
 		}
 		return null;
 	}
@@ -137,10 +126,12 @@ public class Extractor {
 	}
 
 	public static void main(String[] args) {
-		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("testProject");
-		System.out.println(project.getName());
-		System.out.println(project.getPackages());
-//		System.out.println(project.getPackages().get(2).getClasses());
+		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p03-Annotations and Reflections");
+		System.out.println(project);
+		project.deleteEmptyPackages();
+		System.out.println(project);
+		
+		Parser.write(project, "resources/classDiagrams.xml");
 //		project.getRelationships().forEach((r) -> {
 //			System.out.println(" - type : " + r.getType());
 //			System.out.println(" - from : " + r.getFrom());

@@ -1,5 +1,6 @@
 package org.mql.java.extraction;
 
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,12 +10,12 @@ public class MethodType {
 	private List<ParameterType> parameters;
 	private Class<?> returnType;
 	
-	MethodType(String name, String modifiers,Class<?> parameters[], Class<?> returnType){
+	MethodType(String name, String modifiers,Parameter parameters[], Class<?> returnType){
 		this.name = name;
 		this.modifiers= modifiers;
 		this.parameters = new Vector<ParameterType>();
-		for (Class<?> p : parameters) {
-			this.parameters.add(new ParameterType(p.getSimpleName(), p));
+		for (Parameter p : parameters) {
+			this.parameters.add(new ParameterType(p.getName(), p.getType()));
 		}
 		this.returnType = returnType;
 	}

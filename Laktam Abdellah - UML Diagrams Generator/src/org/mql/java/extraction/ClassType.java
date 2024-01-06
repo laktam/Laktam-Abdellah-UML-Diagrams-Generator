@@ -17,39 +17,39 @@ public class ClassType {
 
 	public ClassType(Class<?> c) {
 		this.name = c.getSimpleName();
-		this.modifiers = Modifier.toString(c.getModifiers()) ;
+		this.modifiers = Modifier.toString(c.getModifiers());
 		this.fields = new Vector<FieldType>();
 		Field fields[] = c.getDeclaredFields();
-		for (Field f : fields) {	
+		for (Field f : fields) {
 			this.fields.add(new FieldType(Modifier.toString(f.getModifiers()), f.getName(), f.getType()));
 		}
 		//
 		this.constructors = new Vector<ConstructorType>();
 		Constructor<?> constructors[] = c.getDeclaredConstructors();
 		for (Constructor<?> constructor : constructors) {
-			Class<?> parameters[]= constructor.getParameterTypes();
-			this.constructors.add(new ConstructorType(constructor.getName(), parameters));
+			Parameter parameters[] = constructor.getParameters();
+			if (parameters.length != 0) {
+				this.constructors.add(new ConstructorType(this.name, parameters));
+			}
 		}
 		//
 		this.methods = new Vector<MethodType>();
 		Method methods[] = c.getDeclaredMethods();
 		for (Method m : methods) {
-			this.methods.add(new MethodType(m.getName(), Modifier.toString(m.getModifiers()), m.getParameterTypes(), m.getReturnType()));
+			this.methods.add(new MethodType(m.getName(), Modifier.toString(m.getModifiers()), m.getParameters(),
+					m.getReturnType()));
 		}
 	}
 
-	
-	public List<FieldType> getFields(){
+	public List<FieldType> getFields() {
 		return fields;
 	}
 
-	
-	public List<ConstructorType> getConstructors(){
+	public List<ConstructorType> getConstructors() {
 		return constructors;
 	}
 
-	
-	public List<MethodType> getMethods(){
+	public List<MethodType> getMethods() {
 		return methods;
 	}
 

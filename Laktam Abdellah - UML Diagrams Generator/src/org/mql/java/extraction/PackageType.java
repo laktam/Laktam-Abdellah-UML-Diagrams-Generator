@@ -113,5 +113,32 @@ public class PackageType {
 		this.name = name;
 	}
 	
+	public boolean isEmpty() {
+		//check if subpackages are empty
+		for (PackageType p : packages) {
+			if(!p.isEmpty()) {
+				return false;
+			}
+		}
+		//if all subpackages are empty we check if the packages itself is empty
+		return !containTypes();
+	}
+	
+	public boolean containTypes() {
+		return !(classes.isEmpty() && interfaces.isEmpty() && annotations.isEmpty() && enumerations.isEmpty());
+	}
+	
+	public void deleteEmptyPackages() {
+		List<PackageType> toDelete = new Vector<PackageType>();
+		for (PackageType p : packages) {
+			if(p.isEmpty()) {
+				toDelete.add(p);
+				
+			}else {
+				p.deleteEmptyPackages();
+			}
+		}
+		packages.removeAll(toDelete);
+	}
 	
 }

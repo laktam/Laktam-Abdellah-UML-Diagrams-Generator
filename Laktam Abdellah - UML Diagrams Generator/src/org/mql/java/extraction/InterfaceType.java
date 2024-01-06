@@ -23,7 +23,7 @@ public class InterfaceType {
 		this.methods = new Vector<MethodType>();
 		Method methods[] = c.getDeclaredMethods();
 		for (Method m : methods) {
-			this.methods.add(new MethodType(m.getName(), Modifier.toString(m.getModifiers()), m.getParameterTypes(), m.getReturnType()));
+			this.methods.add(new MethodType(m.getName(), Modifier.toString(m.getModifiers()), m.getParameters(), m.getReturnType()));
 		}
 	}
 	
