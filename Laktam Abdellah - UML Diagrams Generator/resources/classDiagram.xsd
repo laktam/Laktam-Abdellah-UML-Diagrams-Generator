@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="classDiagram">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="class" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="class">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="field" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xsd:element ref="constructor" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xsd:element ref="method" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="name" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="field">
+		<xsd:complexType>
+			<xsd:attribute name="modifiers" type="xsd:string" />
+			<xsd:attribute name="type" type="xsd:string"/>
+			<xsd:attribute name="name" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!--
+	<xsd:simpleType name="modifiersType" >
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="public|private|default|protected" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	-->
+
+	<xsd:element name="parameter">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" />
+			<xsd:attribute name="type" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="constructor">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="parameter" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!--
+	<xsd:simpleType name="nonAccessModifierType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="static|final|abstract"></xsd:pattern>
+		</xsd:restriction>
+	</xsd:simpleType>
+	-->
+
+	<xsd:element name="method">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="parameter" minOccurs="0"
+					maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="modifiers" type="xsd:string"/>
+			<xsd:attribute name="name" type="xsd:string" />
+			<xsd:attribute name="returnType" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+
+
+
+
+
+</xsd:schema>
