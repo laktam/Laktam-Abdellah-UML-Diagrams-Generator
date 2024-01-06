@@ -5,11 +5,11 @@ import java.util.Vector;
 
 public class Project {
 	private String name;
-	private List<Package> packages;
+	private List<PackageType> packages;
 	
 	Project(String name){
 		this.name = name;
-		this.packages = new Vector<Package>();
+		this.packages = new Vector<PackageType>();
 	}
 
 	public String getName() {
@@ -20,7 +20,11 @@ public class Project {
 		this.name = name;
 	}
 	
-	public void addPackage(Package p) {
+	public void addPackage(PackageType p) {
 		packages.add(p);
+	}
+	
+	public List<PackageType> getPackages(){
+		return packages;
 	}
 }

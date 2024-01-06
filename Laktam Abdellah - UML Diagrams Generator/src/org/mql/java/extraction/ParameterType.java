@@ -1,10 +1,10 @@
 package org.mql.java.extraction;
 
-public class Parameter {
+public class ParameterType {
 	private String name;
-	private String type;
+	private Class<?> type;
 	
-	Parameter(String name, String type){
+	ParameterType(String name, Class<?> type){
 		this.name = name;
 		this.type = type;
 	}
@@ -17,11 +17,11 @@ public class Parameter {
 		this.name = name;
 	}
 	
-	public String getType() {
+	public Class<?> getType() {
 		return type;
 	}
 	
-	public void setType(String type) {
+	public void setType(Class<?> type) {
 		this.type = type;
 	}
 	
