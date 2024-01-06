@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<classDiagrams>
+    <classDiagram name="org.mql.java.actions">
+        <class name="EditAction">
+            <method modifiers="public" name="copy" returnType="String"/>
+            <method modifiers="public" name="notUsed" returnType="String"/>
+            <method modifiers="public" name="paste" returnType="String"/>
+            <method modifiers="public" name="cut" returnType="String"/>
+        </class>
+        <class name="FileAction">
+            <method modifiers="public" name="exit" returnType="String"/>
+            <method modifiers="public" name="save" returnType="String"/>
+            <method modifiers="public" name="open" returnType="String"/>
+            <method modifiers="public" name="newFile" returnType="String"/>
+            <method modifiers="public" name="saveAs" returnType="String"/>
+        </class>
+    </classDiagram>
+    <classDiagram name="org.mql.java.models">
+        <class name="Author">
+            <field modifiers="private" name="id" type="int"/>
+            <field modifiers="private" name="name" type="String"/>
+            <field modifiers="private" name="yearBorn" type="int"/>
+            <field modifiers="private" name="technology" type="String"/>
+            <constructor>
+                <parameter name="id" type="int"/>
+                <parameter name="name" type="String"/>
+                <parameter name="yearBorn" type="int"/>
+                <parameter name="technology" type="String"/>
+            </constructor>
+            <method modifiers="public" name="getName" returnType="String"/>
+            <method modifiers="public" name="toString" returnType="String"/>
+            <method modifiers="public" name="setName" returnType="void">
+                <parameter name="name" type="String"/>
+            </method>
+            <method modifiers="public" name="getId" returnType="int"/>
+            <method modifiers="public" name="getYearBorn" returnType="int"/>
+            <method modifiers="public" name="setYearBorn" returnType="void">
+                <parameter name="yearBorn" type="int"/>
+            </method>
+            <method modifiers="public" name="setTechnology" returnType="void">
+                <parameter name="technology" type="String"/>
+            </method>
+            <method modifiers="public" name="getTechnology" returnType="String"/>
+            <method modifiers="public" name="setId" returnType="void">
+                <parameter name="id" type="int"/>
+            </method>
+        </class>
+        <class name="Document">
+            <field modifiers="private" name="id" type="int"/>
+            <field modifiers="private" name="title" type="String"/>
+            <field modifiers="private" name="yearPublished" type="int"/>
+            <field modifiers="private" name="publisher" type="String"/>
+        </class>
+    </classDiagram>
+    <classDiagram name="org.mql.java.reflection">
+        <class name="Examples">
+            <method modifiers="public static" name="main" returnType="void">
+                <parameter name="args" type="String[]"/>
+            </method>
+            <method modifiers="" name="exp01" returnType="void"/>
+            <method modifiers="" name="exp07" returnType="void"/>
+            <method modifiers="" name="exp05" returnType="void"/>
+            <method modifiers="" name="exp06" returnType="void"/>
+            <method modifiers="" name="exp08" returnType="void"/>
+            <method modifiers="" name="exp04" returnType="void"/>
+            <method modifiers="" name="exp02" returnType="void"/>
+            <method modifiers="" name="exp03" returnType="void"/>
+        </class>
+        <class name="FormGenerator">
+            <method modifiers="public static" name="generate" returnType="Form">
+                <parameter name="source" type="Object"/>
+            </method>
+        </class>
+        <class name="PackageExplorer">
+            <method modifiers="public static" name="scan" returnType="String[]">
+                <parameter name="packageName" type="String"/>
+            </method>
+        </class>
+    </classDiagram>
+    <classDiagram name="org.mql.java.ui">
+        <class name="Form">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <field modifiers="private" name="labelSize" type="int"/>
+            <field modifiers="private" name="container" type="JPanel"/>
+            <constructor>
+                <parameter name="title" type="String"/>
+                <parameter name="labelSize" type="int"/>
+            </constructor>
+            <method modifiers="public" name="add" returnType="void">
+                <parameter name="title" type="String"/>
+                <parameter name="size" type="int"/>
+            </method>
+        </class>
+        <class name="LabeledTextField">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <constructor>
+                <parameter name="label" type="String"/>
+                <parameter name="size" type="int"/>
+            </constructor>
+            <constructor>
+                <parameter name="label" type="String"/>
+                <parameter name="size" type="int"/>
+                <parameter name="labelSize" type="int"/>
+            </constructor>
+        </class>
+        <class name="ItemListener">
+            <field modifiers="private" name="controller" type="Object"/>
+            <field modifiers="private" name="method" type="Method"/>
+            <field modifiers="final" name="this$0" type="Menu"/>
+            <constructor>
+                <parameter name="this$0" type="Menu"/>
+                <parameter name="controller" type="Object"/>
+                <parameter name="method" type="Method"/>
+            </constructor>
+            <method modifiers="public" name="actionPerformed" returnType="void">
+                <parameter name="e" type="ActionEvent"/>
+            </method>
+        </class>
+        <class name="Menu">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <field modifiers="private" name="iconPath" type="String"/>
+            <field modifiers="private" name="type" type="String"/>
+            <constructor>
+                <parameter name="titles" type="String[][]"/>
+            </constructor>
+            <method modifiers="public" name="add" returnType="void">
+                <parameter name="controller" type="Object"/>
+            </method>
+            <method modifiers="public" name="add" returnType="void">
+                <parameter name="t" type="String[]"/>
+            </method>
+        </class>
+    </classDiagram>
+</classDiagrams>
