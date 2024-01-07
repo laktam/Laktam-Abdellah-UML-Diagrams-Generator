@@ -6,12 +6,18 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Vector;
 
-public class InterfaceType {
-	private String name;
-	private List<MethodType> methods;
-	private List<FieldType> fields;
-	
+public class InterfaceType extends Type{
+//	private String name;
+//	private List<MethodType> methods;
+//	private List<FieldType> fields;
+	private List<InterfaceType> extendedInterfaces;
 	InterfaceType(Class<?> c){
+		Class<?> interfaces[] = c.getInterfaces();
+		this.extendedInterfaces = new Vector<InterfaceType>();
+		for (Class<?> i : interfaces) {
+			this.extendedInterfaces.add(new InterfaceType(i));
+		}
+		
 		this.name = c.getSimpleName();
 		//
 		this.fields = new Vector<FieldType>();

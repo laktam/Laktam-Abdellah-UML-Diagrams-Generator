@@ -1,5 +1,5 @@
 package org.mql.java.extraction;
 
-public class AnnotationType {
+public class AnnotationType extends Type{
 
 }

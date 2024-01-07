@@ -8,23 +8,41 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Vector;
 
-public class ClassType {
-	private String name;
-	private String modifiers;
-	private List<FieldType> fields;
-	private List<ConstructorType> constructors;
-	private List<MethodType> methods;
+import org.mql.java.extraction.relationships.Relationship;
+
+public class ClassType extends Type {
+//	private String name;
+//	private String modifiers;
+//	private List<FieldType> fields;
+//	private List<ConstructorType> constructors;
+//	private List<MethodType> methods;
+//	private List<InterfaceType> implementedInterfaces;
+//	private ClassType parent;
 
 	public ClassType(Class<?> c) {
+		Class<?> interfaces[] = c.getInterfaces();
+//		this.implementedInterfaces = new Vector<InterfaceType>();
+		for (Class<?> i : interfaces) {
+//			this.implementedInterfaces.add(new InterfaceType(i));
+			this.relationships.add(new Relationship("implementation", this, new InterfaceType(i)));
+		}
+
+		//
+		if (!Object.class.equals(c.getSuperclass()) && c.getSuperclass() != null) {
+//			this.parent = new ClassType(c.getSuperclass());
+			this.relationships.add(new Relationship("extension", this, new ClassType(c.getSuperclass())));
+
+		}
+
 		this.name = c.getSimpleName();
 		this.modifiers = Modifier.toString(c.getModifiers());
-		this.fields = new Vector<FieldType>();
+//		this.fields = new Vector<FieldType>();
 		Field fields[] = c.getDeclaredFields();
 		for (Field f : fields) {
 			this.fields.add(new FieldType(Modifier.toString(f.getModifiers()), f.getName(), f.getType()));
 		}
 		//
-		this.constructors = new Vector<ConstructorType>();
+//		this.constructors = new Vector<ConstructorType>();
 		Constructor<?> constructors[] = c.getDeclaredConstructors();
 		for (Constructor<?> constructor : constructors) {
 			Parameter parameters[] = constructor.getParameters();
@@ -33,7 +51,7 @@ public class ClassType {
 			}
 		}
 		//
-		this.methods = new Vector<MethodType>();
+//		this.methods = new Vector<MethodType>();
 		Method methods[] = c.getDeclaredMethods();
 		for (Method m : methods) {
 			this.methods.add(new MethodType(m.getName(), Modifier.toString(m.getModifiers()), m.getParameters(),

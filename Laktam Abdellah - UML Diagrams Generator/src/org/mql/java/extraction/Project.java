@@ -3,6 +3,8 @@ package org.mql.java.extraction;
 import java.util.List;
 import java.util.Vector;
 
+import org.mql.java.extraction.relationships.Relationship;
+
 public class Project {
 	private String name;
 	private List<PackageType> packages;
@@ -53,5 +55,21 @@ public class Project {
 		}
 		packages.removeAll(toDelete);
 		return packages;
+	}
+	
+	public List<Type> getTypes(){
+		List<Type> types = new Vector<Type>();
+		for (PackageType p : packages) {
+			types.addAll(p.getTypes());
+		}
+		return types;
+	}
+	
+	public List<Relationship> getRelationships(){
+		List<Relationship> relationships = new Vector<>();
+		for (PackageType p : packages) {
+			relationships.addAll(p.getRelationships());
+		}
+		return relationships;
 	}
 }

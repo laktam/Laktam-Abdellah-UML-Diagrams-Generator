@@ -3,6 +3,11 @@ package org.mql.java.extraction;
 import java.util.List;
 import java.util.Vector;
 
+import javax.print.DocFlavor.READER;
+
+import org.mql.java.extraction.Type;
+import org.mql.java.extraction.relationships.Relationship;
+
 public class PackageType {
 	private String name;
 	private List<PackageType> packages;
@@ -139,6 +144,30 @@ public class PackageType {
 			}
 		}
 		packages.removeAll(toDelete);
+	}
+	
+	public List<Type> getTypes() {
+		List<Type> types = new Vector<Type>();
+		types.addAll(classes);
+		types.addAll(interfaces);
+		types.addAll(annotations);
+		types.addAll(enumerations);
+		for (PackageType subP : packages) {
+			types.addAll(subP.getTypes());
+		}
+		return types;
+	}
+	
+	public List<Relationship> getRelationships(){
+		List<Type> types = getTypes();
+		List<Relationship> relationships = new Vector<Relationship>();
+		for (Type t : types) {
+			relationships.addAll(t.getRelationships());
+		}
+		for (PackageType subP : packages) {
+			relationships.addAll(subP.getRelationships());
+		}
+		return relationships;
 	}
 	
 }

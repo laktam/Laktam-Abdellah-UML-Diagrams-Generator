@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
+import org.mql.java.extraction.relationships.RelationshipDetector;
 import org.mql.java.xml.Parser;
 
 public class Extractor {
@@ -27,7 +28,7 @@ public class Extractor {
 			// extract all files
 			List<File> javaFiles = new Vector<File>();
 			// get class Files
-			extractFiles(projectBin, javaFiles);
+			extractFiles(projectBin, javaFiles);//compilation separe=> this why i get the private inner class Item listener 
 			// load them
 			List<Class<?>> classFiles = Loader.loadClasses(projectBin, javaFiles);
 
@@ -38,7 +39,7 @@ public class Extractor {
 			project.addPackages(packages);
 
 			// extract relationships
-//			extractRelationships(packages);
+			extractRelationships(project);
 			return project;
 		}
 		return null;
@@ -119,25 +120,23 @@ public class Extractor {
 	}
 
 	//
-	public void extractRelationships(List<Package> packages) {
-		for (Package p : packages) {
-//			RelationshipDetector.detectRepationShips(p.getAllTypes());
-		}
+	public void extractRelationships(Project project) {
+			RelationshipDetector.detectRepationShips(project.getTypes());
 	}
 
 	public static void main(String[] args) {
 		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p03-Annotations and Reflections");
-		System.out.println(project);
+//		System.out.println(project);
 		project.deleteEmptyPackages();
 		System.out.println(project);
 		
 		Parser.write(project, "resources/classDiagrams.xml");
-//		project.getRelationships().forEach((r) -> {
-//			System.out.println(" - type : " + r.getType());
-//			System.out.println(" - from : " + r.getFrom());
-//			System.out.println(" - to : " + r.getTo() + "\n");
-//
-//		});
+		project.getRelationships().forEach((r) -> {
+			System.out.println(" - type : " + r.getType());
+			System.out.println(" - from : " + r.getFrom());
+			System.out.println(" - to : " + r.getTo() + "\n");
+
+		});
 
 	}
 }
