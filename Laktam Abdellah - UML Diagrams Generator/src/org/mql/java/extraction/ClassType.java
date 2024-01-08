@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,8 +39,11 @@ public class ClassType extends Type {
 		this.modifiers = Modifier.toString(c.getModifiers());
 //		this.fields = new Vector<FieldType>();
 		Field fields[] = c.getDeclaredFields();
+
 		for (Field f : fields) {
-			this.fields.add(new FieldType(Modifier.toString(f.getModifiers()), f.getName(), f.getType()));
+			// i used f.getGenericType because i need to detect aggregation like when i use
+			// List<Type> 
+			this.fields.add(new FieldType(Modifier.toString(f.getModifiers()), f.getName(), f.getGenericType()));
 		}
 		//
 //		this.constructors = new Vector<ConstructorType>();

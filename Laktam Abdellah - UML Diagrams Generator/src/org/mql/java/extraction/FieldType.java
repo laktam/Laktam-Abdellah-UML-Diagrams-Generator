@@ -1,16 +1,19 @@
 package org.mql.java.extraction;
 
+import java.lang.reflect.Type;
 
 public class FieldType {
 	private String modifiers;
 	private String name;
-	private Class<?> type;
-
-	FieldType(String modifiers, String name, Class<?> type) {
+	private Type type;
+	
+	FieldType(String modifiers, String name, Type type) {
 		this.modifiers = modifiers;
 		this.name = name;
 		this.type = type;
 	}
+
+
 
 	public String getModifiers() {
 		return modifiers;
@@ -28,7 +31,7 @@ public class FieldType {
 //		this.name = name;
 //	}
 
-	public Class<?> getType() {
+	public Type getType() {
 		return type;
 	}
 
