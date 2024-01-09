@@ -33,11 +33,11 @@ public class RelationshipDetector {
 			// agregation : if a field's type is complex
 			for (FieldType f : fields) {
 
-				java.lang.reflect.Type fieldType = f.getType();
+//				java.lang.reflect.Type fieldType = f.getType();
 //				if (!isSimple((Class<?>) fieldType)) {
 				// test if it's a collection
-				if (fieldType instanceof ParameterizedType) {
-					java.lang.reflect.Type typeArguments[] = getCollectionTypeArguments((ParameterizedType) fieldType);
+				if (f.isParameterized() && f.isCollection()) {
+					java.lang.reflect.Type typeArguments[] = f.getTypeArguments();
 					if (typeArguments != null) {
 						for (java.lang.reflect.Type typeArgument : typeArguments) {
 							System.out.println(typeArgument);
@@ -46,14 +46,15 @@ public class RelationshipDetector {
 						}
 					}
 				} else {
-					if (!isSimple((Class<?>) fieldType)) {
+
+					if (!f.isSimple()) {
 						// if is an array
-						if (((Class<?>) fieldType).isArray()) {
-							type.addRelationship(
-									new Relationship("agregation", type, new ClassType(((Class<?>) fieldType).componentType())));
+						if (f.isArray()) {
+							type.addRelationship(new Relationship("agregation", type,
+									new ClassType(f.getFieldClass().componentType())));
 						} else {
 							type.addRelationship(
-									new Relationship("agregation", type, new ClassType((Class<?>) fieldType)));
+									new Relationship("agregation", type, new ClassType(f.getFieldClass())));
 
 						}
 
@@ -73,52 +74,51 @@ public class RelationshipDetector {
 			for (MethodType m : methods) {
 				List<ParameterType> parameters = m.getParameters();
 				for (ParameterType p : parameters) {
-					if (!isSimple(p.getType())) {
+					if (!p.isSimple()) {
 						type.addRelationship(new Relationship("dependency", type, new ClassType(p.getType())));
 					}
 				}
-				Class<?> r = m.getReturnType();
-				if (!isSimple(r) && !r.equals(void.class)) {
-					type.addRelationship(new Relationship("dependency", type, new ClassType(r)));
+				if (m.complexReturnTypeAndNotVoid() ) {
+					type.addRelationship(new Relationship("dependency", type, new ClassType(m.getReturnType())));
 				}
 			}
 		}
 
 	}
 
-	private static java.lang.reflect.Type[] getCollectionTypeArguments(ParameterizedType t) {
-//		java.lang.reflect.Type[] typeParameters = t.getActualTypeArguments();
+//	private static java.lang.reflect.Type[] getCollectionTypeArguments(ParameterizedType t) {
+////		java.lang.reflect.Type[] typeParameters = t.getActualTypeArguments();
+//
+//		List<Class<?>> superInterfaces = new Vector<Class<?>>();
+//		getAllSuperInterfaces((Class<?>) t.getRawType(), superInterfaces);
+//		// implements iterable or Map ?
+//		if (superInterfaces.contains(Iterable.class) || superInterfaces.contains(Map.class)) {
+////			System.out.println(t.getActualTypeArguments());
+//			return t.getActualTypeArguments();
+//		}
+//		return null;
+//	}
+//
+//	private static void getAllSuperInterfaces(Class<?> c, List<Class<?>> interfaces) {
+//		Class<?> list[] = c.getInterfaces();
+//		interfaces.addAll(List.of(list));
+//		for (Class<?> i : list) {
+//			getAllSuperInterfaces(i, interfaces);
+//		}
+//	}
 
-		List<Class<?>> superInterfaces = new Vector<Class<?>>();
-		getAllSuperInterfaces((Class<?>) t.getRawType(), superInterfaces);
-		// implements iterable or Map ?
-		if (superInterfaces.contains(Iterable.class) || superInterfaces.contains(Map.class)) {
-//			System.out.println(t.getActualTypeArguments());
-			return t.getActualTypeArguments();
-		}
-		return null;
-	}
-
-	private static void getAllSuperInterfaces(Class<?> c, List<Class<?>> interfaces) {
-		Class<?> list[] = c.getInterfaces();
-		interfaces.addAll(List.of(list));
-		for (Class<?> i : list) {
-			getAllSuperInterfaces(i, interfaces);
-		}
-	}
-
-	private static boolean isSimple(java.lang.Class<?> c) {
-		if (c.isArray()) {
-//			if(c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class)) {
-//				System.out.println(c.arrayType() + ": array type");
-//				return true;
-//			}
-//			return false;
-			return isSimple(c.getComponentType());
-		}
-		if (c.isPrimitive() || c.equals(String.class)) {
-			return true;
-		}
-		return false;
-	}
+//	private static boolean isSimple(Class<?> c) {
+//		if (c.isArray()) {
+////			if(c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class)) {
+////				System.out.println(c.arrayType() + ": array type");
+////				return true;
+////			}
+////			return false;
+//			return isSimple(c.getComponentType());
+//		}
+//		if (c.isPrimitive() || c.equals(String.class)) {
+//			return true;
+//		}
+//		return false;
+//	}
 }
