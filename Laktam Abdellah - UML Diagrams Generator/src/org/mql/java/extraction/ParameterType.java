@@ -25,5 +25,16 @@ public class ParameterType {
 		this.type = type;
 	}
 	
-	
+	public boolean isSimple() {
+		if (type.isArray()) {
+			if(type.getComponentType().isPrimitive() || type.getComponentType().equals(String.class)) {
+				return true;
+			}
+			return false;
+		}
+		if (type.isPrimitive() || type.equals(String.class)) {
+			return true;
+		}
+		return false;
+	}
 }
