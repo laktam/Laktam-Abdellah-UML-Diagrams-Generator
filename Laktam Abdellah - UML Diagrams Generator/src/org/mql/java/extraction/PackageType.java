@@ -15,8 +15,8 @@ public class PackageType {
 	private List<InterfaceType> interfaces;
 	private List<AnnotationType> annotations;
 	private List<EnumerationType> enumerations;
-	
-	PackageType(String name){
+
+	PackageType(String name) {
 		this.name = name;
 		this.packages = new Vector<PackageType>();
 		this.classes = new Vector<ClassType>();
@@ -24,48 +24,80 @@ public class PackageType {
 		this.enumerations = new Vector<EnumerationType>();
 		this.annotations = new Vector<AnnotationType>();
 	}
-	
+
 	@Override
 	public String toString() {
 //		String s = name + "\n";
 //		for (PackageType p : packages) {
 //			s += "- " + p + "\n";
 //		}
-		return printTree("\t");
+//		return printTree("\t");
+		return printFullTree("\t");
 	}
-	
+
 	public String printTree(String indentation) {
-		String s = indentation + name  + "\n";
-		
-		if(!classes.isEmpty()) {
-			s+= indentation + " ** classes \n";
+		String s = indentation + name + "\n";
+
+		if (!classes.isEmpty()) {
+			s += indentation + " ** classes \n";
 			for (ClassType c : classes) {
-				s+= indentation + " -- "  + c.getName() + "\n";
-			}	
+				s += indentation + " -- " + c.getName() + "\n";
+			}
 		}
-		
-		
-		if(!interfaces.isEmpty()) {
-			s+= indentation + " ** interfaces \n";		
+
+		if (!interfaces.isEmpty()) {
+			s += indentation + " ** interfaces \n";
 			for (InterfaceType i : interfaces) {
-				s+= indentation + " -- "  + i.getName() + "\n";
-			}	
+				s += indentation + " -- " + i.getName() + "\n";
+			}
 		}
-		
-		if(!packages.isEmpty()) {
+		// delegate to subpackages
+		if (!packages.isEmpty()) {
 			indentation += "\t";
 			for (PackageType p : packages) {
 				s += p.printTree(indentation);
 			}
 		}
-		
+
 		return s;
 	}
-	
+
+	public String printFullTree(String indentation) {
+		String s = "";
+		if (!getOnlyThisPackageTypes().isEmpty()) {
+			s = indentation + name + "\n";
+			if (!classes.isEmpty()) {
+				s += indentation + " ** classes \n";
+				for (ClassType c : classes) {
+					s += indentation + " -- " + c.getName() + "\n";
+				}
+			}
+
+			if (!interfaces.isEmpty()) {
+				s += indentation + " ** interfaces \n";
+				for (InterfaceType i : interfaces) {
+					s += indentation + " -- " + i.getName() + "\n";
+				}
+			}
+		}
+		// delegate to subpackages
+		if (!packages.isEmpty()) {
+			if(!"".equals(s)) {//so i don't add indentation when the superPackage is empty
+				indentation += "\t";	
+			}
+			
+			for (PackageType p : packages) {
+				s += p.printFullTree(indentation);
+			}
+		}
+
+		return s;
+	}
+
 	public void addPackages(List<PackageType> packages) {
 		this.packages.addAll(packages);
 	}
-	
+
 	public List<PackageType> getPackages() {
 		return packages;
 	}
@@ -81,32 +113,32 @@ public class PackageType {
 	public void addEnumeration(EnumerationType e) {
 		enumerations.add(e);
 	}
-	
-	public List<EnumerationType> getEnumerations(){
+
+	public List<EnumerationType> getEnumerations() {
 		return enumerations;
 	}
-	
+
 	public void addAnnotation(AnnotationType a) {
 		annotations.add(a);
 	}
-	
-	public List<AnnotationType> getAnnotations(){
+
+	public List<AnnotationType> getAnnotations() {
 		return annotations;
 	}
-	
+
 	public void addClass(ClassType c) {
 		classes.add(c);
 	}
-	
-	public List<ClassType> getClasses(){
+
+	public List<ClassType> getClasses() {
 		return classes;
 	}
-	
+
 	public void addInterface(InterfaceType i) {
 		interfaces.add(i);
 	}
-	
-	public List<InterfaceType> getInterfaces(){
+
+	public List<InterfaceType> getInterfaces() {
 		return interfaces;
 	}
 
@@ -117,34 +149,43 @@ public class PackageType {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public boolean isEmpty() {
-		//check if subpackages are empty
+		// check if subpackages are empty
 		for (PackageType p : packages) {
-			if(!p.isEmpty()) {
+			if (!p.isEmpty()) {
 				return false;
 			}
 		}
-		//if all subpackages are empty we check if the packages itself is empty
+		// if all subpackages are empty we check if the packages itself is empty
 		return !containTypes();
 	}
-	
+
 	public boolean containTypes() {
 		return !(classes.isEmpty() && interfaces.isEmpty() && annotations.isEmpty() && enumerations.isEmpty());
 	}
-	
+
 	public void deleteEmptyPackages() {
 		List<PackageType> toDelete = new Vector<PackageType>();
 		for (PackageType p : packages) {
-			if(p.isEmpty()) {
+			if (p.isEmpty()) {
 				toDelete.add(p);
-				
-			}else {
+
+			} else {
 				p.deleteEmptyPackages();
 			}
 		}
 		packages.removeAll(toDelete);
 	}
+
+	public List<Type> getOnlyThisPackageTypes() {
+		List<Type> types = new Vector<Type>();
+		types.addAll(classes);
+		types.addAll(interfaces);
+		types.addAll(annotations);
+		types.addAll(enumerations);
+		return types;
+	} 
 	
 	public List<Type> getTypes() {
 		List<Type> types = new Vector<Type>();
@@ -157,8 +198,8 @@ public class PackageType {
 		}
 		return types;
 	}
-	
-	public List<Relationship> getRelationships(){
+
+	public List<Relationship> getRelationships() {
 		List<Type> types = getTypes();
 		List<Relationship> relationships = new Vector<Relationship>();
 		for (Type t : types) {
@@ -169,5 +210,5 @@ public class PackageType {
 		}
 		return relationships;
 	}
-	
+
 }
