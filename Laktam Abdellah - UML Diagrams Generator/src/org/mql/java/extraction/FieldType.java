@@ -2,6 +2,7 @@ package org.mql.java.extraction;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -12,11 +13,45 @@ public class FieldType {
 	private String modifiers;
 	private String name;
 	private Type type;
+	
 
 	FieldType(String modifiers, String name, Type type) {
 		this.modifiers = modifiers;
 		this.name = name;
 		this.type = type;
+	}
+	
+	public String getTypeName() {
+//		int l = type.getTypeName().lastIndexOf(".");
+//		if(l != -1) {
+//			return type.getTypeName().substring(l+1);
+//		}
+		if(type instanceof Class<?>) {
+			return  ((Class<?>) type).getSimpleName();
+		}
+		if(isParameterized()) {
+			//cast the result of .getRawType() to get simplename
+			String t  = ((Class<?>) ((ParameterizedType) type).getRawType()).getSimpleName();
+
+			java.lang.reflect.Type typeArguments[] = getTypeArguments();
+			if (typeArguments != null) {
+//				t += "<";//escaped in xml
+				t+= "(";
+				for (int i = 0; i < typeArguments.length; i++) {
+					t +=  ((Class<?>) typeArguments[i]).getSimpleName();
+					if(i != typeArguments.length - 1) {
+						t+= ", ";
+					}
+					
+					
+				}
+				t+=")";
+//				t+=">";
+			}	
+			return t;
+		}
+		
+		return "";
 	}
 	
 	public String getModifiers() {
@@ -58,9 +93,10 @@ public class FieldType {
 	}
 
 	public boolean isCollection() {
-		List<Class<?>> superInterfaces = new Vector<Class<?>>();
-		getAllSuperInterfaces((Class<?>) ((ParameterizedType) type).getRawType(), superInterfaces);
-		if (superInterfaces.contains(Iterable.class) || superInterfaces.contains(Map.class)) {
+		List<Class<?>> interfaces = new Vector<Class<?>>();
+		interfaces.add( ((Class<?>) ((ParameterizedType) type).getRawType()));
+		getAllSuperInterfaces((Class<?>) ((ParameterizedType) type).getRawType(), interfaces);
+		if (interfaces.contains(Iterable.class) || interfaces.contains(Map.class)) {
 			return true;
 		}
 		return false;
@@ -69,6 +105,7 @@ public class FieldType {
 	private void getAllSuperInterfaces(Class<?> c, List<Class<?>> interfaces) {
 		Class<?> list[] = c.getInterfaces();
 		interfaces.addAll(List.of(list));
+		
 		for (Class<?> i : list) {
 			getAllSuperInterfaces(i, interfaces);
 		}
