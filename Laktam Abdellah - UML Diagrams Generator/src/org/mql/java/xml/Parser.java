@@ -66,7 +66,7 @@ public class Parser {
 			Element fieldElement = doc.createElement("field");
 			fieldElement.setAttribute("modifiers", f.getModifiers());
 			fieldElement.setAttribute("name", f.getName());
-			fieldElement.setAttribute("type", f.getType().getSimpleName());
+			fieldElement.setAttribute("type", f.getTypeName());
 			classElement.appendChild(fieldElement);
 		}
 		List<ConstructorType> constructors = c.getConstructors();
