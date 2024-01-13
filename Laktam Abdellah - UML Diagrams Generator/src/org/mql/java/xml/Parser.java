@@ -16,12 +16,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.mql.java.extraction.*;
+import org.mql.java.extraction.relationships.Relationship;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Parser {
 	private static Document doc;
 	private static Element classDiagrams;
+	
 	public static void write(Project project, String output) {
 		
 		try {
@@ -34,6 +36,7 @@ public class Parser {
 
 		List<PackageType> packages = project.deleteEmptyPackages();
 		parsePackages(packages);
+		parseRelationships(project.getRelationships());
 		doc.appendChild(classDiagrams);
 		writeXml(doc, output);
 	}
@@ -100,6 +103,18 @@ public class Parser {
 			classElement.appendChild(methodElement);
 		}
 		return classElement;
+	}
+	
+	private static void parseRelationships(List<Relationship> relationships) {
+		Element relationshipsE = doc.createElement("relationships");
+		for (Relationship r : relationships) {
+			Element rE = doc.createElement("relationship");
+			rE.setAttribute("type", r.getType());
+			rE.setAttribute("from",	r.getFrom().getName());
+			rE.setAttribute("to", r.getTo().getName());
+			relationshipsE.appendChild(rE);
+		}
+		classDiagrams.appendChild(relationshipsE);
 	}
 
 	private static void writeXml(Document doc, String outputFile) {
