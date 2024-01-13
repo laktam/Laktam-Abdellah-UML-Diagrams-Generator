@@ -51,12 +51,23 @@ public class MethodType {
 	public boolean complexReturnTypeAndNotVoid() {
 		if (returnType.isArray()) {
 			if (returnType.getComponentType().isPrimitive() || returnType.getComponentType().equals(String.class)
-					|| returnType.getComponentType().equals(void.class)) {
+					|| returnType.getComponentType().equals(void.class) || returnType.getComponentType().equals(Object.class)) {
 				return false;
 			}
-			return true;
+			// array of wrapper type
+			if (returnType.getComponentType() == Double.class || returnType.getComponentType() == Float.class || returnType.getComponentType() == Long.class
+					|| returnType.getComponentType() == Integer.class || returnType.getComponentType() == Short.class || returnType.getComponentType() == Character.class
+					|| returnType.getComponentType() == Byte.class || returnType.getComponentType() == Boolean.class) {
+				return false;
+			}
+				return true;
 		}
-		if (returnType.isPrimitive() || returnType.equals(String.class) || returnType.equals(void.class)) {
+		if (returnType.isPrimitive() || returnType.equals(String.class) || returnType.equals(void.class) || returnType.equals(Object.class)) {
+			return false;
+		}
+		if (returnType == Double.class || returnType == Float.class || returnType == Long.class
+				|| returnType == Integer.class || returnType == Short.class || returnType == Character.class
+				|| returnType == Byte.class || returnType == Boolean.class) {
 			return false;
 		}
 		return true;
