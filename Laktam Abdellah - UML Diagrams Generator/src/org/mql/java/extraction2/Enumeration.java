@@ -1,9 +1,8 @@
 package org.mql.java.extraction2;
 
-public class Enumeration {
-	private java.lang.Class<?> c;
+public class Enumeration extends Type{
 	
 	public Enumeration(java.lang.Class<?> c) {
-		this.c = c;
+		super(c, "enumeration");
 	}
 }

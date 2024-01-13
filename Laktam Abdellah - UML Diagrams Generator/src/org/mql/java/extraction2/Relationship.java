@@ -2,10 +2,11 @@ package org.mql.java.extraction2;
 
 public class Relationship {
 	private String type;
-	private Class from;
-	private Class to;
+	private Type from;
+	private Type to;
 	
-	public Relationship(String type, Class from, Class to) {
+	//maybe delete source because it is always the class that hold the relationship
+	public Relationship(String type, Type from, Type to) {
 		this.type = type;
 		this.from = from;
 		this.to = to;
@@ -19,19 +20,19 @@ public class Relationship {
 		this.type = type;
 	}
 
-	public Class getFrom() {
+	public Type getFrom() {
 		return from;
 	}
 
-	public void setFrom(Class from) {
+	public void setFrom(Type from) {
 		this.from = from;
 	}
 
-	public Class getTo() {
+	public Type getTo() {
 		return to;
 	}
 
-	public void setTo(Class to) {
+	public void setTo(Type to) {
 		this.to = to;
 	}
 	

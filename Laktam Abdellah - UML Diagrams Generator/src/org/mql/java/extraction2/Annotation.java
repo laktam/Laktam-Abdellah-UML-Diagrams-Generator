@@ -1,8 +1,8 @@
 package org.mql.java.extraction2;
 
-public class Annotation {
-	private java.lang.Class<?> c;
+public class Annotation extends Type{
+
 	public Annotation(java.lang.Class<?> c) {
-		this.c = c;
+		super(c, "annotation");
 	}
 }

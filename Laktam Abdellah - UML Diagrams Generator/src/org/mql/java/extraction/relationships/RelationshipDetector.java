@@ -33,12 +33,12 @@ public class RelationshipDetector {
 			// agregation : if a field's type is complex
 			for (FieldType f : fields) {
 
-				// if it's a collection we need to add the Type in <__>
+				// if it's a collection we need to add the Types in <__>
 				if (f.isParameterized() && f.isCollection()) {
 					java.lang.reflect.Type typeArguments[] = f.getTypeArguments();
 					if (typeArguments != null) {
 						for (java.lang.reflect.Type typeArgument : typeArguments) {
-							type.addRelationship(
+							type.addRelationship(						//why only ClassType here ?
 									new Relationship("agregation", type, new ClassType((Class<?>) typeArgument)));
 						}
 					}

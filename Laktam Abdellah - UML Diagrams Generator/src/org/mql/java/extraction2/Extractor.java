@@ -29,7 +29,10 @@ public class Extractor {
 			// load them
 			List<java.lang.Class<?>> classFiles = Loader.loadClasses(projectBin, javaFiles);
 			//
-			project.addPackages(extractPackages(classFiles)); ;
+			List<Package> packages = extractPackages(classFiles);
+			project.addPackages(packages);
+			// extract relationships
+			extractRelationships(packages);
 			return project;
 //			System.out.println(classList.get(0).getDeclaredFields()[0].getName());
 //			Set<java.lang.Package> javaPackages = new HashSet<>();
@@ -57,15 +60,17 @@ public class Extractor {
 
 	public List<Package> extractPackages(List<java.lang.Class<?>> classFiles) {
 		Set<java.lang.Package> javaPackages = new HashSet<>();
-		//fill javaPackages set
+		// fill javaPackages set
 		for (java.lang.Class<?> c : classFiles) {
 			javaPackages.add(c.getPackage());
-		}
-		Map<String, Package> packages = new HashMap<>();
-		for (java.lang.Package p : javaPackages) {
-			packages.put(p.getName(), new Package(p.getName()));//so i can reference them by name to fill them 
+			c.getPackage();
 		}
 		
+		Map<String, Package> packages = new HashMap<>();
+		for (java.lang.Package p : javaPackages) {
+			packages.put(p.getName(), new Package(p.getName()));// so i can reference them by name to fill them
+		}
+
 		for (java.lang.Class<?> c : classFiles) {
 			if (c.isAnnotation()) {
 				Annotation a = new Annotation(c);
@@ -81,31 +86,33 @@ public class Extractor {
 				packages.get(c.getPackage().getName()).addClass(cl);
 			}
 		}
-		
-		//get packages from map
+
+		// get packages from map
 		List<Package> ps = new Vector<Package>();
-		for (Entry<String , Package> entry : packages.entrySet()) {
+		for (Entry<String, Package> entry : packages.entrySet()) {
 			ps.add(entry.getValue());
 		}
 		return ps;
 	}
-	
+
 	//
-	public void extractRelations(List<Package> packages) {
+	public void extractRelationships(List<Package> packages) {
 		for (Package p : packages) {
-//			p.getClasses()
-			//get all 4 lists in package
-			//parcourir les membres de chaque entite
-				//
-			
+			RelationshipDetector.detectRepationShips(p.getAllTypes());
 		}
 	}
-	
 
 	public static void main(String[] args) {
 		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("testProject");
 		System.out.println(project.getName());
 		System.out.println(project.getPackages());
 		System.out.println(project.getPackages().get(2).getClasses());
+		project.getRelationships().forEach((r) -> {
+			System.out.println(" - type : " + r.getType());
+			System.out.println(" - from : " + r.getFrom());
+			System.out.println(" - to : " + r.getTo() + "\n");
+
+		});
+
 	}
 }

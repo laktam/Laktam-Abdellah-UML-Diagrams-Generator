@@ -55,7 +55,6 @@ public class Extractor {
 				if (f.listFiles().length > 0 && containsDirectory(f)) // is not empty and contains at least a directory
 					p.addPackages(createPackagesTree(f.listFiles()));
 				packagesTree.add(p);
-
 			}
 		}
 		return packagesTree;
@@ -125,7 +124,7 @@ public class Extractor {
 	}
 
 	public static void main(String[] args) {
-		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p03-Annotations and Reflections");
+		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p05-MultiThreading");
 //		System.out.println(project);
 		project.deleteEmptyPackages();
 		System.out.println(project);

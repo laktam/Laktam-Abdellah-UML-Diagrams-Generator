@@ -1,6 +1,8 @@
 package org.mql.java.extraction2;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.List;
 
 public class RelationshipDetector {
@@ -26,7 +28,7 @@ public class RelationshipDetector {
 				f.setAccessible(true);
 				try {
 					java.lang.Class<?> fieldClass = f.getType();
-					if (!fieldClass.isPrimitive() && !fieldClass.equals(String.class)) {
+					if (!isSimple(fieldClass)) {//!fieldClass.isPrimitive() && !fieldClass.equals(String.class)
 						type.addRelationship(new Relationship("agregation", type, new Class(fieldClass)));
 					}
 				} catch (IllegalArgumentException e) {
@@ -47,8 +49,36 @@ public class RelationshipDetector {
 			for (java.lang.Class<?>  i : interfaces) {
 				type.addRelationship(new Relationship(relationship, type, new Class(i)));
 			}
+			//check constructor parameters ??
 			//dependency : detect it if a method has a return type or a parameter of an external class
-			
+			Method methods[]  = c.getDeclaredMethods();
+			for (Method m : methods) {
+				java.lang.Class<?> parameters[] = m.getParameterTypes();
+				for (java.lang.Class<?> p : parameters) {
+					if(!isSimple(p)) {
+						type.addRelationship(new Relationship("dependency", type, new Class(p)));
+					}
+				}
+				java.lang.Class<?> r = m.getReturnType();
+				if(!isSimple(r) && !r.equals(void.class)) {
+					type.addRelationship(new Relationship("dependency", type, new Class(r)));
+				}
+			}
 		}
+	}
+	
+	private static boolean isSimple(java.lang.Class<?> c) {
+		if(c.isArray()) {
+//			if(c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class)) {
+//				System.out.println(c.arrayType() + ": array type");
+//				return true;
+//			}
+//			return false;
+			return isSimple(c.getComponentType());
+		}
+		if (c.isPrimitive() || c.equals(String.class)) {
+			return true;
+		}
+		return false;
 	}
 }

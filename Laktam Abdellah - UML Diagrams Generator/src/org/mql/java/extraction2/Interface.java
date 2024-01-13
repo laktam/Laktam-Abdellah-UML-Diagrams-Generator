@@ -1,15 +1,10 @@
 package org.mql.java.extraction2;
 
 
-public class Interface {
-	private java.lang.Class<?> c;
+public class Interface extends Type{
 	
 	Interface(java.lang.Class<?> c){
-		this.c = c;
-	}
-	
-	public java.lang.Class<?>[] getExtendedInterfaces(){
-		return c.getInterfaces();
+		super(c, "interface");
 	}
 	
 	

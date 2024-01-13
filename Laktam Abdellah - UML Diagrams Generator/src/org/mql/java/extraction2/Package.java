@@ -9,44 +9,44 @@ public class Package {
 	private List<Interface> interfaces;
 	private List<Annotation> annotations;
 	private List<Enumeration> enumerations;
-	
-	Package(String name){
+
+	Package(String name) {
 		this.name = name;
 		this.classes = new Vector<Class>();
 		this.interfaces = new Vector<Interface>();
 		this.enumerations = new Vector<Enumeration>();
 		this.annotations = new Vector<Annotation>();
 	}
-	
+
 	public void addEnumeration(Enumeration e) {
 		enumerations.add(e);
 	}
-	
-	public List<Enumeration> getEnumerations(){
+
+	public List<Enumeration> getEnumerations() {
 		return enumerations;
 	}
-	
+
 	public void addAnnotation(Annotation a) {
 		annotations.add(a);
 	}
-	
-	public List<Annotation> getAnnotations(){
+
+	public List<Annotation> getAnnotations() {
 		return annotations;
 	}
-	
+
 	public void addClass(Class c) {
 		classes.add(c);
 	}
-	
-	public List<Class> getClasses(){
+
+	public List<Class> getClasses() {
 		return classes;
 	}
-	
+
 	public void addInterface(Interface i) {
 		interfaces.add(i);
 	}
-	
-	public List<Interface> getInterfaces(){
+
+	public List<Interface> getInterfaces() {
 		return interfaces;
 	}
 
@@ -57,11 +57,28 @@ public class Package {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		return this.name;
 	}
-	
+
+	public List<Type> getAllTypes() {
+		List<Type> types = new Vector<Type>();
+		types.addAll(classes);
+		types.addAll(interfaces);
+		types.addAll(annotations);
+		types.addAll(enumerations);
+		return types;
+	}
+
+	public List<Relationship> getRelationships() {
+		List<Relationship> relationships = new Vector<Relationship>();
+		List<Type> types = getAllTypes(); 
+		for (Type type : types) {
+			relationships.addAll(type.getRelationships());
+		}
+		return relationships;
+	}
 }
