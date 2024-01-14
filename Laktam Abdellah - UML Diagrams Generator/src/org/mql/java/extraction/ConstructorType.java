@@ -5,24 +5,25 @@ import java.util.List;
 import java.util.Vector;
 
 public class ConstructorType {
-	private String name;
+	private String simpleName;
+	private String fqName;
 	private List<ParameterType> parameters;
-	
-	ConstructorType(String name, Parameter parameters[]){
+
+	ConstructorType(String simpleName, String fqName, Parameter parameters[]) {
 		this.parameters = new Vector<ParameterType>();
 		for (Parameter p : parameters) {
-			this.parameters.add(new ParameterType(p.getName(), p.getType()));
+			this.parameters.add(new ParameterType(p));
 		}
-		this.name = name;
-	}
-	
-
-	public String getName() {
-		return name;
+		this.simpleName = simpleName;
+		this.fqName = fqName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getSimpleName() {
+		return simpleName;
+	}
+
+	public String getFqName() {
+		return fqName;
 	}
 
 	public List<ParameterType> getParameters() {
@@ -32,6 +33,5 @@ public class ConstructorType {
 	public void setParameters(List<ParameterType> parameters) {
 		this.parameters = parameters;
 	}
-	
-	
+
 }

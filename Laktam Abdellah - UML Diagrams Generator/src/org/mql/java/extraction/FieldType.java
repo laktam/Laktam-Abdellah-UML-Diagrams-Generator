@@ -1,5 +1,7 @@
 package org.mql.java.extraction;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -11,88 +13,116 @@ import org.mql.java.extraction.relationships.Relationship;
 
 public class FieldType {
 	private String modifiers;
-	private String name;
+	private String fieldName;
+	private String typeSimpleName;
+	private String typeFQName;
+	private List<String> simpleTypeArguments;
+	private List<String> fqTypeArguments;
+	private boolean isParameterized = false;
 	private Type type;
 
-	FieldType(String modifiers, String name, Type type) {
-		this.modifiers = modifiers;
-		this.name = name;
-		this.type = type;// maybe a simple type or parameterized type
+	FieldType(Field f) {
+		// maybe a simple type or parameterized type
+		this.modifiers = Modifier.toString(f.getModifiers());
+		this.fieldName = f.getName();
+		this.simpleTypeArguments = new Vector<String>();
+		this.fqTypeArguments = new Vector<String>();
+		
+		this.type = f.getGenericType();
+		if (type instanceof ParameterizedType) {
+			this.isParameterized = true;
+			ParameterizedType pType = (ParameterizedType) type;
+			this.typeSimpleName = createSimpleTypeName(pType, "(", ")");
+			this.typeFQName = createFQTypeName(pType, "(", ")");
+//			this.typeFQName = pType.getTypeName();
+			fillSimpleTypeArguments(pType);
+			fillFQTypeArguments(pType);
+		} else {
+			this.typeSimpleName = ((Class<?>) type).getSimpleName();
+			this.typeFQName = ((Class<?>) type).getName();
+		}
 	}
 
-	public String getTypeName() {
-		if (type instanceof Class<?>) {
-			return ((Class<?>) type).getSimpleName();
-		}
-		if (isParameterized()) {
-			// cast the result of .getRawType() to get simplename (will return List if the
-			// field is List<Test>)
-			String t = ((Class<?>) ((ParameterizedType) type).getRawType()).getSimpleName();
-			// add arguments
-			java.lang.reflect.Type typeArguments[] = getTypeArguments();
-			if (typeArguments != null) {
+	public static String createSimpleTypeName(ParameterizedType pType, String open, String end) {
+		// cast the result of .getRawType() to get simplename (will return List if the
+		// field is List<Test>)
+		String t = ((Class<?>) pType.getRawType()).getSimpleName();
+		// add arguments
+		java.lang.reflect.Type typeArguments[] = pType.getActualTypeArguments();
+		if (typeArguments != null) {
 //				t += "<";//escaped in xml
-				t += "(";
-				for (int i = 0; i < typeArguments.length; i++) {
-					t += ((Class<?>) typeArguments[i]).getSimpleName();
-					if (i != typeArguments.length - 1) {
-						t += ", ";
-					}
-
+			t += open;
+			for (int i = 0; i < typeArguments.length; i++) {
+				String simpleArgumentName = ((Class<?>) typeArguments[i]).getSimpleName();
+				t += simpleArgumentName;
+				if (i != typeArguments.length - 1) {
+					t += ", ";
 				}
-				t += ")";
-//				t+=">";
-			}
-			return t;
-		}
 
-		return "";
+			}
+			t += end;
+		}
+		return t;
+
+	}
+	private void fillSimpleTypeArguments(ParameterizedType pType) {
+		Type typeArguments[] = pType.getActualTypeArguments();
+		for (Type type : typeArguments) {
+			String simpleArgumentName = ((Class<?>) type).getSimpleName();
+			this.simpleTypeArguments.add(simpleArgumentName);
+		}
+	}
+	// = ParameterizedType.getTypeName();
+	public static String createFQTypeName(ParameterizedType pType, String open, String end) {
+		// (will return List if the field is List<Test>)
+		String t = ((Class<?>) pType.getRawType()).getName();
+		// add arguments
+		Type typeArguments[] = pType.getActualTypeArguments();
+		if (typeArguments != null) {
+			t += open;
+			for (int i = 0; i < typeArguments.length; i++) {
+				String fqTypeArgument = ((Class<?>) typeArguments[i]).getSimpleName();
+				t += fqTypeArgument;
+				if (i != typeArguments.length - 1) {
+					t += ", ";
+				}
+
+			}
+			t += end;
+//				t+=">";
+		}
+		return t;
+	}
+	
+	private void fillFQTypeArguments(ParameterizedType pType) {
+		Type typeArguments[] = pType.getActualTypeArguments();
+		for (Type type : typeArguments) {
+			String simpleArgumentName = ((Class<?>) type).getName();
+			this.simpleTypeArguments.add(simpleArgumentName);
+		}
+	}
+
+	public Class<?> getFieldType() {
+		if (type instanceof Class<?>) {
+			return (Class<?>) type;
+		}
+		return null;
 	}
 
 	public String getModifiers() {
 		return modifiers;
 	}
 
-//	public void setModifiers(String modifiers) {
-//		this.modifiers = modifiers;
-//	}
-
-	public String getName() {
-		return name;
-	}
-
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public Class<?> getFieldClass() {
-		if (!isParameterized()) {
-			return (Class<?>) type;
-		}
-		return null;
-	}
-
-	public boolean isParameterized() {
+	public Type[] getTypeArguments() {
 		if (type instanceof ParameterizedType) {
-			return true;
-		}
-		return false;
-	}
-
-	public java.lang.reflect.Type[] getTypeArguments() {
-		if (isParameterized())
-//			List<?> types = List.of(((ParameterizedType) type).getActualTypeArguments());
 			return ((ParameterizedType) type).getActualTypeArguments();
+		}
 		return null;
 	}
 
 	public boolean isCollection() {
 		List<Class<?>> interfaces = new Vector<Class<?>>();
-		interfaces.add(((Class<?>) ((ParameterizedType) type).getRawType()));
+		interfaces.add(((Class<?>) ((ParameterizedType) type).getRawType()));// Map declaration
 		getAllSuperInterfaces((Class<?>) ((ParameterizedType) type).getRawType(), interfaces);
 		if (interfaces.contains(Iterable.class) || interfaces.contains(Map.class)) {
 			return true;
@@ -109,6 +139,30 @@ public class FieldType {
 		}
 	}
 
+	public String getTypeSimpleName() {
+		return typeSimpleName;
+	}
+
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public boolean isParameterized() {
+		return isParameterized;
+	}
+
+	public List<String> getFQTypeArguments() {
+		return fqTypeArguments;
+	}
+
+	public List<String> getSimpleTypeArguments() {
+		return simpleTypeArguments;
+	}
+
+	public String getTypeFQName() {
+		return typeFQName;
+	}
+
 	public boolean isArray() {
 		if (((Class<?>) type).isArray()) {
 			return true;
@@ -116,10 +170,25 @@ public class FieldType {
 		return false;
 	}
 
+	public String getArrayTypeSimpleName() {
+		if (isArray()) {
+			return ((Class<?>) type).componentType().getSimpleName();
+		}
+		return null;
+	}
+
+	public String getArrayTypeFQName() {
+		if (isArray()) {
+			return ((Class<?>) type).componentType().getName();
+		}
+		return null;
+	}
+
 	public boolean isSimple() {
-		Class<?> c = getFieldClass();
+		Class<?> c = getFieldType();
 		if (c.isArray()) {
-			if (c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class) ||c.getComponentType().equals(Object.class)) {
+			if (c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class)
+					|| c.getComponentType().equals(Object.class)) {
 				return true;
 			}
 			// array of wrapper type
@@ -131,8 +200,8 @@ public class FieldType {
 			}
 			return false;
 		}
-		
-		//if not an array
+
+		// if not an array
 		if (c.isPrimitive() || c.equals(String.class) || c.equals(Object.class)) {
 			return true;
 		}

@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Vector;
 
-public class InterfaceType extends Type{
+public class InterfaceType extends SuperType{
 //	private String name;
 //	private List<MethodType> methods;
 //	private List<FieldType> fields;
@@ -18,12 +18,13 @@ public class InterfaceType extends Type{
 			this.extendedInterfaces.add(new InterfaceType(i));
 		}
 		
-		this.name = c.getSimpleName();
+		this.simpleName = c.getSimpleName();
+		this.fqName = c.getName();
 		//
 		this.fields = new Vector<FieldType>();
 		Field fields[] = c.getDeclaredFields();
 		for (Field f : fields) {	
-			this.fields.add(new FieldType(Modifier.toString(f.getModifiers()), f.getName(), f.getType()));
+			this.fields.add(new FieldType(f));
 		}
 		//
 		this.methods = new Vector<MethodType>();
@@ -49,13 +50,6 @@ public class InterfaceType extends Type{
 		methods.add(method);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 	
 	
 }

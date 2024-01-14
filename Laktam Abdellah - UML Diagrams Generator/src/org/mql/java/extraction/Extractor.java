@@ -28,12 +28,13 @@ public class Extractor {
 			// extract all files
 			List<File> javaFiles = new Vector<File>();
 			// get class Files
-			extractFiles(projectBin, javaFiles);//compilation separe=> this why i get the private inner class Item listener 
+			extractFiles(projectBin, javaFiles);// compilation separe=> this why i get the private inner class Item
+												// listener
 			// load them
 			List<Class<?>> classFiles = Loader.loadClasses(projectBin, javaFiles);
 
 			// create project tree
-			//must edit ot get only used packages !!!!!
+			// must edit ot get only used packages !!!!!
 			List<PackageType> packages = createPackagesTree(projectBin.listFiles());
 			fillPackages(packages, classFiles);
 			project.addPackages(packages);
@@ -120,7 +121,7 @@ public class Extractor {
 
 	//
 	public void extractRelationships(Project project) {
-			RelationshipDetector.detectRepationShips(project.getTypes());
+		RelationshipDetector.detectRelationShips(project.getTypes());
 	}
 
 	public static void main(String[] args) {
@@ -128,14 +129,18 @@ public class Extractor {
 //		System.out.println(project);
 		project.deleteEmptyPackages();
 		System.out.println(project);
-		
+
 		Parser.write(project, "resources/classDiagrams.xml");
-		project.getRelationships().forEach((r) -> {
+		project.getRelationshipsSet().forEach((r) -> {
 			System.out.println(" - type : " + r.getType());
-			System.out.println(" - from : " + r.getFrom());
-			System.out.println(" - to : " + r.getTo() + "\n");
+			System.out.println(" - from : " + r.getFrom().getFQName());
+			System.out.println(" - to : " + r.getTo().getFQName() + "\n");
 
 		});
 
+		project.getInternalClasses().forEach(System.out::println);
+		System.out.println();
+		System.out.println("Externals");
+		project.getExternalClasses().forEach(System.out::println);
 	}
 }

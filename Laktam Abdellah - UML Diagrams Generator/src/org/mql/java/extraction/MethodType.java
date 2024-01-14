@@ -1,6 +1,7 @@
 package org.mql.java.extraction;
 
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,14 +9,14 @@ public class MethodType {
 	private String name;
 	private String modifiers;
 	private List<ParameterType> parameters;
-	private Class<?> returnType;
+	private Type returnType;
 
-	MethodType(String name, String modifiers, Parameter parameters[], Class<?> returnType) {
+	MethodType(String name, String modifiers, Parameter parameters[], Type returnType) {
 		this.name = name;
 		this.modifiers = modifiers;
 		this.parameters = new Vector<ParameterType>();
 		for (Parameter p : parameters) {
-			this.parameters.add(new ParameterType(p.getName(), p.getType()));
+			this.parameters.add(new ParameterType(p));
 		}
 		this.returnType = returnType;
 	}
@@ -36,7 +37,7 @@ public class MethodType {
 		this.parameters = parameters;
 	}
 
-	public Class<?> getReturnType() {
+	public Type getReturnType() {
 		return returnType;
 	}
 
@@ -46,29 +47,33 @@ public class MethodType {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
+	}	
+	
+	
 	public boolean complexReturnTypeAndNotVoid() {
-		if (returnType.isArray()) {
-			if (returnType.getComponentType().isPrimitive() || returnType.getComponentType().equals(String.class)
-					|| returnType.getComponentType().equals(void.class) || returnType.getComponentType().equals(Object.class)) {
+		if(returnType instanceof Class<?>) {
+			Class<?> c = (Class<?>) returnType;
+			if (c.isArray()) {
+				if (c.getComponentType().isPrimitive() || c.getComponentType().equals(String.class)
+						|| c.getComponentType().equals(void.class) || c.getComponentType().equals(Object.class)) {
+					return false;
+				}
+				// array of wrapper type
+				if (c.getComponentType() == Double.class || c.getComponentType() == Float.class || c.getComponentType() == Long.class
+						|| c.getComponentType() == Integer.class || c.getComponentType() == Short.class || c.getComponentType() == Character.class
+						|| c.getComponentType() == Byte.class || c.getComponentType() == Boolean.class) {
+					return false;
+				}
+					return true;
+			}
+			if (c.isPrimitive() || c.equals(String.class) || c.equals(void.class) || c.equals(Object.class)) {
 				return false;
 			}
-			// array of wrapper type
-			if (returnType.getComponentType() == Double.class || returnType.getComponentType() == Float.class || returnType.getComponentType() == Long.class
-					|| returnType.getComponentType() == Integer.class || returnType.getComponentType() == Short.class || returnType.getComponentType() == Character.class
-					|| returnType.getComponentType() == Byte.class || returnType.getComponentType() == Boolean.class) {
+			if (returnType == Double.class || returnType == Float.class || returnType == Long.class
+					|| returnType == Integer.class || returnType == Short.class || returnType == Character.class
+					|| returnType == Byte.class || returnType == Boolean.class) {
 				return false;
 			}
-				return true;
-		}
-		if (returnType.isPrimitive() || returnType.equals(String.class) || returnType.equals(void.class) || returnType.equals(Object.class)) {
-			return false;
-		}
-		if (returnType == Double.class || returnType == Float.class || returnType == Long.class
-				|| returnType == Integer.class || returnType == Short.class || returnType == Character.class
-				|| returnType == Byte.class || returnType == Boolean.class) {
-			return false;
 		}
 		return true;
 	}

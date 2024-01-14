@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import javax.print.DocFlavor.READER;
 
-import org.mql.java.extraction.Type;
+import org.mql.java.extraction.SuperType;
 import org.mql.java.extraction.relationships.Relationship;
 
 public class PackageType {
@@ -15,6 +15,7 @@ public class PackageType {
 	private List<InterfaceType> interfaces;
 	private List<AnnotationType> annotations;
 	private List<EnumerationType> enumerations;
+	private List<String> internalClasses;
 
 	PackageType(String name) {
 		this.name = name;
@@ -23,7 +24,18 @@ public class PackageType {
 		this.interfaces = new Vector<InterfaceType>();
 		this.enumerations = new Vector<EnumerationType>();
 		this.annotations = new Vector<AnnotationType>();
+		this.internalClasses = new Vector<String>();
 	}
+	
+	public List<String> getInternalClasses() {
+		List<SuperType> types = getTypes();
+		for (SuperType type : types) {
+			internalClasses.add(type.getFQName());
+		}
+		return internalClasses;
+	}
+	
+	
 
 	@Override
 	public String toString() {
@@ -41,14 +53,14 @@ public class PackageType {
 		if (!classes.isEmpty()) {
 			s += indentation + " ** classes \n";
 			for (ClassType c : classes) {
-				s += indentation + " -- " + c.getName() + "\n";
+				s += indentation + " -- " + c.getSimpleName() + "\n";
 			}
 		}
 
 		if (!interfaces.isEmpty()) {
 			s += indentation + " ** interfaces \n";
 			for (InterfaceType i : interfaces) {
-				s += indentation + " -- " + i.getName() + "\n";
+				s += indentation + " -- " + i.getSimpleName() + "\n";
 			}
 		}
 		// delegate to subpackages
@@ -69,14 +81,14 @@ public class PackageType {
 			if (!classes.isEmpty()) {
 				s += indentation + " ** classes \n";
 				for (ClassType c : classes) {
-					s += indentation + " -- " + c.getName() + "\n";
+					s += indentation + " -- " + c.getSimpleName() + "\n";
 				}
 			}
 
 			if (!interfaces.isEmpty()) {
 				s += indentation + " ** interfaces \n";
 				for (InterfaceType i : interfaces) {
-					s += indentation + " -- " + i.getName() + "\n";
+					s += indentation + " -- " + i.getSimpleName() + "\n";
 				}
 			}
 		}
@@ -178,8 +190,8 @@ public class PackageType {
 		packages.removeAll(toDelete);
 	}
 
-	public List<Type> getOnlyThisPackageTypes() {
-		List<Type> types = new Vector<Type>();
+	public List<SuperType> getOnlyThisPackageTypes() {
+		List<SuperType> types = new Vector<SuperType>();
 		types.addAll(classes);
 		types.addAll(interfaces);
 		types.addAll(annotations);
@@ -187,8 +199,8 @@ public class PackageType {
 		return types;
 	} 
 	
-	public List<Type> getTypes() {
-		List<Type> types = new Vector<Type>();
+	public List<SuperType> getTypes() {
+		List<SuperType> types = new Vector<SuperType>();
 		types.addAll(classes);
 		types.addAll(interfaces);
 		types.addAll(annotations);
@@ -200,9 +212,9 @@ public class PackageType {
 	}
 
 	public List<Relationship> getRelationships() {
-		List<Type> types = getTypes();
+		List<SuperType> types = getTypes();
 		List<Relationship> relationships = new Vector<Relationship>();
-		for (Type t : types) {
+		for (SuperType t : types) {
 			relationships.addAll(t.getRelationships());
 		}
 		for (PackageType subP : packages) {
