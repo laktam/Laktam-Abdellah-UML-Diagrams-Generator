@@ -41,7 +41,7 @@ public class Project {
 		for (Relationship r : relationships) {
 			toEnds.add(r.getTo());
 		}
-		
+
 		// loop over ends and test if each one exist in internalClasses
 		for (RelationshipEnd rEnd : toEnds) {
 			if (!internalTypes.contains(rEnd.getFQName())) {
@@ -81,6 +81,26 @@ public class Project {
 		return packages;
 	}
 
+	public List<PackageType> getPackagesInOneLevel(){
+		List<PackageType> pckgs = new Vector<PackageType>();
+		pckgs.addAll(packages);
+		for (PackageType p : pckgs) {
+			getPackages(pckgs, p);
+		}
+		return pckgs;
+	}
+
+	private void getPackages(List<PackageType> pckgs, PackageType p) {
+		List<PackageType> subPckgs = p.getPackages();
+		if (!subPckgs.isEmpty()) {
+			for (PackageType subP : subPckgs) {
+				pckgs.add(subP);
+				getPackages(pckgs, subP);
+			}
+		}
+
+	}
+
 //	public List<PackageType> deleteEmptyPackages() {
 //		List<PackageType> toDelete = new Vector<PackageType>();
 //		for (PackageType p : packages) {
@@ -94,8 +114,6 @@ public class Project {
 //		return packages;
 //	}
 
-	
-	
 	public List<SuperType> getTypes() {
 		List<SuperType> types = new Vector<SuperType>();
 		for (PackageType p : packages) {
@@ -112,7 +130,7 @@ public class Project {
 		return relationships;
 	}
 
-	//this use redefined equals() and hashcode() 
+	// this use redefined equals() and hashcode()
 	public Set<Relationship> getRelationshipsSet() {
 		List<Relationship> relationships = getRelationships();
 		Set<Relationship> relationshipsSet = new HashSet<Relationship>();
@@ -123,13 +141,15 @@ public class Project {
 	}
 
 	public PackageType getPackage(String packageFQName) {
+//		List<PackageType> pckgs = getPackagesInOneLevel();
 		for (PackageType p : packages) {
-			System.out.println(p.getFQName());
-			if( p.getFQName().equals(packageFQName)) {
+			if (p.getFQName().equals(packageFQName)) {
 				return p;
+			}else {
+				return p.getPackage(packageFQName);
 			}
 		}
-		return null;
+		return null;//doesn't exist
 	}
 //	class RelationshipsComparator implements Comparator<Relationship>{
 //		//don't need order, used only for uniqueness

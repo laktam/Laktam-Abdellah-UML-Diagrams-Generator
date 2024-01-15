@@ -1,6 +1,8 @@
 package org.mql.java.extraction;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.print.DocFlavor.READER;
@@ -9,30 +11,40 @@ import org.mql.java.extraction.SuperType;
 import org.mql.java.extraction.relationships.Relationship;
 
 public class PackageType {
-	private String name;
+	private String fqName;
 	private List<PackageType> packages;
 	private List<ClassType> classes;
 	private List<InterfaceType> interfaces;
 	private List<AnnotationType> annotations;
 	private List<EnumerationType> enumerations;
-	private List<String> internalClasses;
+	private List<String> internalTypes;
 
-	PackageType(String name) {
-		this.name = name;
+	PackageType(String fqName) {
+		this.fqName = fqName;
 		this.packages = new Vector<PackageType>();
 		this.classes = new Vector<ClassType>();
 		this.interfaces = new Vector<InterfaceType>();
 		this.enumerations = new Vector<EnumerationType>();
 		this.annotations = new Vector<AnnotationType>();
-		this.internalClasses = new Vector<String>();
+		this.internalTypes = new Vector<String>();
 	}
 	
-	public List<String> getInternalClasses() {
+	public List<String> getInternalTypes() {
 		List<SuperType> types = getTypes();
 		for (SuperType type : types) {
-			internalClasses.add(type.getFQName());
+			internalTypes.add(type.getFQName());
 		}
-		return internalClasses;
+		return internalTypes;
+	}
+	
+	public SuperType getType(String fqName) {
+		List<SuperType> types = getTypes();
+		for (SuperType t : types) {
+			if(t.getFQName().equals(fqName)) {
+				return t;
+			}
+		}
+		return null;
 	}
 	
 	
@@ -48,7 +60,7 @@ public class PackageType {
 	}
 
 	public String printTree(String indentation) {
-		String s = indentation + name + "\n";
+		String s = indentation + fqName + "\n";
 
 		if (!classes.isEmpty()) {
 			s += indentation + " ** classes \n";
@@ -77,7 +89,7 @@ public class PackageType {
 	public String printFullTree(String indentation) {
 		String s = "";
 		if (!getOnlyThisPackageTypes().isEmpty()) {
-			s = indentation + name + "\n";
+			s = indentation + fqName + "\n";
 			if (!classes.isEmpty()) {
 				s += indentation + " ** classes \n";
 				for (ClassType c : classes) {
@@ -154,12 +166,12 @@ public class PackageType {
 		return interfaces;
 	}
 
-	public String getName() {
-		return name;
+	public String getFQName() {
+		return fqName;
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.fqName = name;
 	}
 
 	public boolean isEmpty() {
@@ -176,6 +188,17 @@ public class PackageType {
 	public boolean containTypes() {
 		return !(classes.isEmpty() && interfaces.isEmpty() && annotations.isEmpty() && enumerations.isEmpty());
 	}
+	
+	public PackageType getPackage(String packageFQName) {
+		for (PackageType p : packages) {
+			if (p.getFQName().equals(packageFQName)) {
+				return p;
+			}else {
+				return p.getPackage(packageFQName);
+			}
+		}
+		return null;
+	}
 
 	public void deleteEmptyPackages() {
 		List<PackageType> toDelete = new Vector<PackageType>();
@@ -189,7 +212,7 @@ public class PackageType {
 		}
 		packages.removeAll(toDelete);
 	}
-
+	//no types from subPackages
 	public List<SuperType> getOnlyThisPackageTypes() {
 		List<SuperType> types = new Vector<SuperType>();
 		types.addAll(classes);
@@ -222,5 +245,14 @@ public class PackageType {
 		}
 		return relationships;
 	}
+	//this use redefined equals() and hashcode() 
+		public Set<Relationship> getRelationshipsSet() {
+			List<Relationship> relationships = getRelationships();
+			Set<Relationship> relationshipsSet = new HashSet<Relationship>();
+			for (Relationship r : relationships) {
+				relationshipsSet.add(r);
+			}
+			return relationshipsSet;
+		}
 
 }
