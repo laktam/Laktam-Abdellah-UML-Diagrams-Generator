@@ -14,24 +14,24 @@ import org.mql.java.extraction.relationships.RelationshipEnd;
 public class Project {
 	private String name;
 	private List<PackageType> packages;
-	private List<String> internalClasses;
+	private List<String> internalTypes;
 
 	Project(String name) {
 		this.name = name;
 		this.packages = new Vector<PackageType>();
-		this.internalClasses = new Vector<String>();
+		this.internalTypes = new Vector<String>();
 	}
 
-	public List<String> getInternalClasses() {
+	public List<String> getInternalTypes() {
 		for (PackageType p : packages) {
-			internalClasses.addAll(p.getInternalClasses());
+			internalTypes.addAll(p.getInternalTypes());
 		}
-		return internalClasses;
+		return internalTypes;
 	}
 
-	public List<String> getExternalClasses() {
-		List<String> internalClasses = getInternalClasses();
-		List<String> externalClasses = new Vector<String>();// Uniqueness
+	public List<String> getExternalTypes() {
+		List<String> internalTypes = getInternalTypes();
+		List<String> externalTypes = new Vector<String>();// Uniqueness
 		// we will start by getting the relationshipEnd (TO)
 		// because from will always be an internalClass
 		// then we test each one if it is in the internal list
@@ -44,11 +44,11 @@ public class Project {
 		
 		// loop over ends and test if each one exist in internalClasses
 		for (RelationshipEnd rEnd : toEnds) {
-			if (!internalClasses.contains(rEnd.getFQName())) {
-				externalClasses.add(rEnd.getFQName());
+			if (!internalTypes.contains(rEnd.getFQName())) {
+				externalTypes.add(rEnd.getFQName());
 			}
 		}
-		return externalClasses;
+		return externalTypes;
 	}
 
 	@Override
@@ -81,19 +81,21 @@ public class Project {
 		return packages;
 	}
 
-	public List<PackageType> deleteEmptyPackages() {
-		List<PackageType> toDelete = new Vector<PackageType>();
-		for (PackageType p : packages) {
-			if (p.isEmpty()) {
-				toDelete.add(p);
-			} else {
-				p.deleteEmptyPackages();
-			}
-		}
-		packages.removeAll(toDelete);
-		return packages;
-	}
+//	public List<PackageType> deleteEmptyPackages() {
+//		List<PackageType> toDelete = new Vector<PackageType>();
+//		for (PackageType p : packages) {
+//			if (p.isEmpty()) {
+//				toDelete.add(p);
+//			} else {
+//				p.deleteEmptyPackages();
+//			}
+//		}
+//		packages.removeAll(toDelete);
+//		return packages;
+//	}
 
+	
+	
 	public List<SuperType> getTypes() {
 		List<SuperType> types = new Vector<SuperType>();
 		for (PackageType p : packages) {
@@ -110,6 +112,7 @@ public class Project {
 		return relationships;
 	}
 
+	//this use redefined equals() and hashcode() 
 	public Set<Relationship> getRelationshipsSet() {
 		List<Relationship> relationships = getRelationships();
 		Set<Relationship> relationshipsSet = new HashSet<Relationship>();
@@ -119,6 +122,15 @@ public class Project {
 		return relationshipsSet;
 	}
 
+	public PackageType getPackage(String packageFQName) {
+		for (PackageType p : packages) {
+			System.out.println(p.getFQName());
+			if( p.getFQName().equals(packageFQName)) {
+				return p;
+			}
+		}
+		return null;
+	}
 //	class RelationshipsComparator implements Comparator<Relationship>{
 //		//don't need order, used only for uniqueness
 //		@Override
