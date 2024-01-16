@@ -2,8 +2,10 @@ package org.mql.java.extraction;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.mql.java.extraction.relationships.Relationship;
@@ -16,7 +18,8 @@ public class SuperType {
 	protected List<ConstructorType> constructors;
 	protected List<MethodType> methods;
 	protected List<Relationship> relationships;
-
+	protected String type;
+	
 	public SuperType() {
 		this.relationships = new Vector<Relationship>();
 		this.fields = new Vector<FieldType>();
@@ -36,6 +39,16 @@ public class SuperType {
 	// default getters need to return an empty list !!
 	public List<Relationship> getRelationships() {
 		return relationships;
+	}
+
+	// this use redefined equals() and hashcode()
+	public Set<Relationship> getRelationshipsSet() {
+		List<Relationship> relationships = getRelationships();
+		Set<Relationship> relationshipsSet = new HashSet<Relationship>();
+		for (Relationship r : relationships) {
+			relationshipsSet.add(r);
+		}
+		return relationshipsSet;
 	}
 
 	public String getSimpleName() {
@@ -92,7 +105,7 @@ public class SuperType {
 
 //	private static void getAllSuperInterfaces(Class<?> c, List<Class<?>> interfaces) {
 //		Class<?> list[] = c.getInterfaces();
-//		interfaces.addAll(List.of(list));
+//		interfaces.addAll(Arrays.asList(list));
 //
 //		for (Class<?> i : list) {
 //			getAllSuperInterfaces(i, interfaces);

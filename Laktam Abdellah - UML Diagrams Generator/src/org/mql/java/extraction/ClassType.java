@@ -5,16 +5,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Vector;
+
 
 import org.mql.java.extraction.relationships.Relationship;
 import org.mql.java.extraction.relationships.RelationshipEnd;
 
 public class ClassType extends SuperType {
+	
 
 	public ClassType(Class<?> c) {
+		this.type = "class";
 		this.simpleName = c.getSimpleName();
 		this.fqName = c.getName();
 		this.modifiers = Modifier.toString(c.getModifiers());

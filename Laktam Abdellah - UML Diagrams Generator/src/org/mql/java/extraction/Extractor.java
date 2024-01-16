@@ -104,15 +104,6 @@ public class Extractor {
 		return false;
 	}
 
-//	private List<PackageType> createPackages(Package[] javaPackages) {
-//		List<PackageType> packages = new Vector<>();
-//
-//		for (Package p : javaPackages) {
-//			packages.add(new PackageType(p.getName()));
-//		}
-//		return packages;
-//	}
-
 	private void fillPackages(List<PackageType> packages, List<Class<?>> classFiles) {
 
 		Map<String, PackageType> packagesMap = new HashMap<>();// so i can reference them by fqname to fill them
@@ -180,7 +171,7 @@ public class Extractor {
 		System.out.println("** External types **");
 		project.getExternalTypes().forEach(System.out::println);
 
-		Drawer drawer = new Drawer(project);
-		drawer.drawClassDiagram("org.mql.java.animation");
+//		Drawer drawer = new Drawer(project);
+//		drawer.drawClassDiagram("org.mql.java.animation");
 	}
 }

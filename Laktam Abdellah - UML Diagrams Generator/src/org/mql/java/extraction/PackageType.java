@@ -4,10 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
-import javax.print.DocFlavor.READER;
-
-import org.mql.java.extraction.SuperType;
 import org.mql.java.extraction.relationships.Relationship;
 
 public class PackageType {

@@ -3,6 +3,7 @@ package org.mql.java.extraction;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -94,7 +95,7 @@ public class ParameterType {
 
 	private void getAllSuperInterfaces(Class<?> c, List<Class<?>> interfaces) {
 		Class<?> list[] = c.getInterfaces();
-		interfaces.addAll(List.of(list));
+		interfaces.addAll(Arrays.asList(list));
 
 		for (Class<?> i : list) {
 			getAllSuperInterfaces(i, interfaces);

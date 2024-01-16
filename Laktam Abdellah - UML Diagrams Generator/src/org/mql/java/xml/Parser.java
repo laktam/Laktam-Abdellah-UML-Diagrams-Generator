@@ -37,7 +37,8 @@ public class Parser {
 			e.printStackTrace();
 		}
 
-		List<PackageType> packages = project.deleteEmptyPackages();
+//		List<PackageType> packages = project.deleteEmptyPackages();
+		List<PackageType> packages = project.getPackages();
 		parsePackages(packages);
 		parseRelationships(project.getRelationshipsSet());
 		doc.appendChild(classDiagrams);
@@ -48,7 +49,7 @@ public class Parser {
 		for (PackageType p : packages) {
 			if (p.containTypes()) {
 				Element classDiagram = doc.createElement("classDiagram");
-				classDiagram.setAttribute("name", p.getName());
+				classDiagram.setAttribute("name", p.getFQName());
 
 				List<ClassType> classes = p.getClasses();
 				for (ClassType c : classes) {

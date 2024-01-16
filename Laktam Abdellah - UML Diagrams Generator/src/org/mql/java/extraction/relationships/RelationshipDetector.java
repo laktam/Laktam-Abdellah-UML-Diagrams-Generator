@@ -111,7 +111,7 @@ public class RelationshipDetector {
 					Class<?> cReturnType = (Class<?>) returnType;
 					if (m.complexReturnTypeAndNotVoid()) {
 						type.addRelationship(new Relationship("dependency", thisEnd, new RelationshipEnd(
-								cReturnType.getSimpleName(), cReturnType.getCanonicalName(), "to")));
+								cReturnType.getSimpleName(), cReturnType.getName(), "to")));
 					}
 				}
 
