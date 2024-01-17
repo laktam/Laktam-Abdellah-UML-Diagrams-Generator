@@ -1,5 +1,7 @@
 package org.mql.java.ui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.lang.reflect.ParameterizedType;
@@ -7,6 +9,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import org.mql.java.extraction.FieldType;
@@ -19,14 +22,17 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int width;
-	private int height;
+	private int textBottomPadding = 4;
+	private int topAndBottomPadding = 12;
+	private int sidePaddings = 5;
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
 
 	public TypeUI(SuperType type) {
 		this.attributes = new Vector<String>();
 		this.methods = new Vector<String>();
+		setBorder(BorderFactory.createLineBorder(Color.black));
+
 		this.type = type;
 		List<FieldType> fields = type.getFields();
 		for (FieldType f : fields) {
@@ -34,8 +40,8 @@ public class TypeUI extends JPanel {
 			s += f.getFieldName() + " : " + f.getTypeSimpleName();
 			attributes.add(s);
 		}
-		List<MethodType> methods = type.getMethods();
-		for (MethodType m : methods) {
+		List<MethodType> ms = type.getMethods();
+		for (MethodType m : ms) {
 			String s = transformModifiers(m.getModifiers());
 			s += m.getName() + "(";
 			List<ParameterType> params = m.getParameters();
@@ -45,15 +51,16 @@ public class TypeUI extends JPanel {
 					s += ", ";
 				}
 			}
-
+			
 			Type rType = m.getReturnType();
 			if (rType instanceof Class<?>) {
 				s += "): " + ((Class<?>) m.getReturnType()).getTypeName();
 			} else if (rType instanceof ParameterizedType) {
 				s += "): " + FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">");
-				System.out.println(FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">"));
+//				System.out.println(FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">"));
 
 			}
+			methods.add(s);
 		}
 
 	}
@@ -78,6 +85,7 @@ public class TypeUI extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		g.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		// need to calculate the the longest string to get width
 		List<String> all = new Vector<String>(attributes);
 		all.addAll(methods);
@@ -88,28 +96,48 @@ public class TypeUI extends JPanel {
 			}
 		}
 		System.out.println(widest);
-		// change width to the actual display width of the string
+		// change width to the actual display width of the biggest string
 		FontMetrics fm = g.getFontMetrics();
-		width = fm.stringWidth(widest);
-		setSize(width, getHeight());
+		Font font = g.getFont();
+		//
+		double fontHeight =  font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
+		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
+		setSize(fm.stringWidth(widest) + (sidePaddings * 2), (int)  height);//Math.ceil ?
 		//
 
 		int simpleNameWidth = 0;
-		int stringAccent = 0;
+		int stringHeight = 0;
 		int xName = 0;
 		int yName = 0;
 
 		simpleNameWidth = fm.stringWidth(type.getSimpleName());
-		stringAccent = fm.getAscent();
-
-//		setSize(simpleNameWidth, stringAccent + 5);
+		stringHeight = (int) Math.ceil(fontHeight) ;
 
 		xName = getWidth() / 2 - simpleNameWidth / 2;
-		yName = getHeight() / 2 + stringAccent / 2;
-
+		yName = topAndBottomPadding + stringHeight;
+		
 		// draw simpleName
 		g.drawString(type.getSimpleName(), xName, yName);
-		g.drawLine(0, getHeight(), getWidth(), getHeight());
+		int yLine = yName + topAndBottomPadding + textBottomPadding;
+		g.drawLine(0, yLine, getWidth(), yLine);
+		
+		//draw attributes
+		int x = sidePaddings;
+		int y = yLine + topAndBottomPadding + stringHeight;
+		for (String a : attributes) {
+			g.drawString(a, x, y);
+			y += stringHeight + textBottomPadding;
+		}
+
+		//draw methods
+		y = y - stringHeight - textBottomPadding;
+		y += topAndBottomPadding ;
+		g.drawLine(0, y, getWidth(), y);
+		y += topAndBottomPadding + stringHeight ;//+ textBottomPadding
+		for (String m : methods) {
+			g.drawString(m, x, y);
+			y += stringHeight + textBottomPadding;
+		}
 	}
 
 }
