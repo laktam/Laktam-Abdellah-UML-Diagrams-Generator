@@ -86,19 +86,20 @@ public class TypeUI extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		FontMetrics fm = g.getFontMetrics();
+		Font font = g.getFont();
 		// need to calculate the the longest string to get width
 		List<String> all = new Vector<String>(attributes);
 		all.addAll(methods);
-		String widest = all.get(0);
+		String widest = "";
 		for (String s : all) {
-			if (s.length() > widest.length()) {
+			if (fm.stringWidth(s)  > fm.stringWidth(widest) ) {
 				widest = s;
 			}
 		}
 		System.out.println(widest);
 		// change width to the actual display width of the biggest string
-		FontMetrics fm = g.getFontMetrics();
-		Font font = g.getFont();
+		
 		//
 		double fontHeight =  font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
 		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
