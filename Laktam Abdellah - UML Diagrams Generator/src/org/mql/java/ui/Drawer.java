@@ -37,9 +37,9 @@ public class Drawer extends JFrame {
 		Set<Relationship> relationships = pckg.getRelationshipsSet();
 
 		// test
-		drawType("org.mql.java.animation.Pingouin", pckg);
-		setSize(300, 300);
-		setResizable(false);
+		drawType(packageFQName + ".ProducerConsumer", pckg);
+//		setSize(300, 300);
+		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
