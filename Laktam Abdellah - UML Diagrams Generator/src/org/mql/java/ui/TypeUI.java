@@ -22,8 +22,9 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int textBottomPadding = 4;
-	private int topAndBottomPadding = 12;
+	private int margin;
+	private int textBottomPadding = 3;
+	private int topAndBottomPadding = 6;
 	private int sidePaddings = 5;
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
@@ -51,7 +52,7 @@ public class TypeUI extends JPanel {
 					s += ", ";
 				}
 			}
-			
+
 			Type rType = m.getReturnType();
 			if (rType instanceof Class<?>) {
 				s += "): " + ((Class<?>) m.getReturnType()).getTypeName();
@@ -85,7 +86,7 @@ public class TypeUI extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		g.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		FontMetrics fm = g.getFontMetrics();
 		Font font = g.getFont();
 		// need to calculate the the longest string to get width
@@ -93,17 +94,17 @@ public class TypeUI extends JPanel {
 		all.addAll(methods);
 		String widest = "";
 		for (String s : all) {
-			if (fm.stringWidth(s)  > fm.stringWidth(widest) ) {
+			if (fm.stringWidth(s) > fm.stringWidth(widest)) {
 				widest = s;
 			}
 		}
 		System.out.println(widest);
 		// change width to the actual display width of the biggest string
-		
+
 		//
-		double fontHeight =  font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
+		double fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
 		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
-		setSize(fm.stringWidth(widest) + (sidePaddings * 2), (int)  height);//Math.ceil ?
+		setSize(fm.stringWidth(widest) + (sidePaddings * 2), (int) height);// Math.ceil ?
 		//
 
 		int simpleNameWidth = 0;
@@ -112,31 +113,41 @@ public class TypeUI extends JPanel {
 		int yName = 0;
 
 		simpleNameWidth = fm.stringWidth(type.getSimpleName());
-		stringHeight = (int) Math.ceil(fontHeight) ;
+		stringHeight = (int) Math.ceil(fontHeight);
 
 		xName = getWidth() / 2 - simpleNameWidth / 2;
 		yName = topAndBottomPadding + stringHeight;
-		
+
 		// draw simpleName
 		g.drawString(type.getSimpleName(), xName, yName);
 		int yLine = yName + topAndBottomPadding + textBottomPadding;
 		g.drawLine(0, yLine, getWidth(), yLine);
-		
-		//draw attributes
+
+		// draw attributes
 		int x = sidePaddings;
 		int y = yLine + topAndBottomPadding + stringHeight;
-		for (String a : attributes) {
-			g.drawString(a, x, y);
+		for (String attribute : attributes) {
+			if (attribute.startsWith("S")) {// static
+				g.drawString(attribute.substring(1), x, y);
+				g.drawLine(x, y + 2, fm.stringWidth(attribute), y + 2);
+			} else {
+				g.drawString(attribute, x, y);
+			}
 			y += stringHeight + textBottomPadding;
 		}
 
-		//draw methods
+		// draw methods
 		y = y - stringHeight - textBottomPadding;
-		y += topAndBottomPadding ;
+		y += topAndBottomPadding;
 		g.drawLine(0, y, getWidth(), y);
-		y += topAndBottomPadding + stringHeight ;//+ textBottomPadding
-		for (String m : methods) {
-			g.drawString(m, x, y);
+		y += topAndBottomPadding + stringHeight;// + textBottomPadding
+		for (String method : methods) {
+			if (method.startsWith("S")) {// static
+				g.drawString(method.substring(1), x, y);
+				g.drawLine(x, y + 2, fm.stringWidth(method), y + 2);
+			} else {
+				g.drawString(method, x, y);
+			}
 			y += stringHeight + textBottomPadding;
 		}
 	}
