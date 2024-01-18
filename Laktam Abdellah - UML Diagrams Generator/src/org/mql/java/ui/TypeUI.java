@@ -30,6 +30,8 @@ public class TypeUI extends JPanel {
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
 	private int h, w;
+	private	String widestString;
+	private double fontHeight;
 
 	public TypeUI(SuperType type) {
 		this.attributes = new Vector<String>();
@@ -65,7 +67,7 @@ public class TypeUI extends JPanel {
 			}
 			methods.add(s);
 		}
-
+		calculateSize();
 	}
 
 	private String transformModifiers(String modifiers) {
@@ -84,32 +86,53 @@ public class TypeUI extends JPanel {
 		}
 		return s;
 	}
+	
+	private void calculateSize() {
+		Font font = new Font("Segoe UI", Font.BOLD, 12);
+		setFont(font);
+		FontMetrics fm = getFontMetrics(font);
+		// need to calculate the the longest string to get width
+		List<String> all = new Vector<String>(attributes);
+		all.addAll(methods);
+		 widestString = "";
+		for (String s : all) {
+			if (fm.stringWidth(s) > fm.stringWidth(widestString)) {
+				widestString = s;
+			}
+		}
+		
+		 fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widestString).getVisualBounds().getHeight();
+		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
+
+		w = fm.stringWidth(widestString) + (sidePaddings * 2) + margin * 2;
+		h = (int) height + margin * 2;
+		setSize(w, h);
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setFont(new Font("Segoe UI", Font.BOLD, 13));
+//		g.setFont(new Font("Segoe UI", Font.BOLD, 13));
 		FontMetrics fm = g.getFontMetrics();
-		Font font = g.getFont();
-		// need to calculate the the longest string to get width
-		List<String> all = new Vector<String>(attributes);
-		all.addAll(methods);
-		String widest = "";
-		for (String s : all) {
-			if (fm.stringWidth(s) > fm.stringWidth(widest)) {
-				widest = s;
-			}
-		}
-		System.out.println(widest);
+//		Font font = g.getFont();
+
+		//		List<String> all = new Vector<String>(attributes);
+//		all.addAll(methods);
+//		String widest = "";
+//		for (String s : all) {
+//			if (fm.stringWidth(s) > fm.stringWidth(widest)) {
+//				widest = s;
+//			}
+//		}
 		// change width to the actual display width of the biggest string
 
 		//
-		double fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
-		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
-		
-		w =fm.stringWidth(widest) + (sidePaddings * 2) + margin * 2;
-		h = (int) height + margin * 2;
-		setSize(w, h);// Math.ceil ?
+//		double fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
+//		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
+//
+//		w = fm.stringWidth(widest) + (sidePaddings * 2) + margin * 2;
+//		h = (int) height + margin * 2;
+//		setSize(w, h);
 		//
 
 		int simpleNameWidth = 0;
@@ -160,6 +183,7 @@ public class TypeUI extends JPanel {
 
 	@Override
 	public Dimension getPreferredSize() {
+		System.out.println("width : " + w + " height : " + h);
 		return new Dimension(w, h);
 	}
 
