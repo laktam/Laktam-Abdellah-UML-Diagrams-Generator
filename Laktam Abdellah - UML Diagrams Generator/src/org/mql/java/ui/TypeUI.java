@@ -1,6 +1,7 @@
 package org.mql.java.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -22,17 +23,18 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int margin;
+	private int margin = 25;
 	private int textBottomPadding = 3;
 	private int topAndBottomPadding = 6;
 	private int sidePaddings = 5;
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
+	private int h, w;
 
 	public TypeUI(SuperType type) {
 		this.attributes = new Vector<String>();
 		this.methods = new Vector<String>();
-		setBorder(BorderFactory.createLineBorder(Color.black));
+//		setBorder(BorderFactory.createLineBorder(Color.black));
 
 		this.type = type;
 		List<FieldType> fields = type.getFields();
@@ -104,7 +106,10 @@ public class TypeUI extends JPanel {
 		//
 		double fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widest).getVisualBounds().getHeight();
 		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
-		setSize(fm.stringWidth(widest) + (sidePaddings * 2), (int) height);// Math.ceil ?
+		
+		w =fm.stringWidth(widest) + (sidePaddings * 2) + margin * 2;
+		h = (int) height + margin * 2;
+		setSize(w, h);// Math.ceil ?
 		//
 
 		int simpleNameWidth = 0;
@@ -116,20 +121,20 @@ public class TypeUI extends JPanel {
 		stringHeight = (int) Math.ceil(fontHeight);
 
 		xName = getWidth() / 2 - simpleNameWidth / 2;
-		yName = topAndBottomPadding + stringHeight;
+		yName = topAndBottomPadding + stringHeight + margin;
 
 		// draw simpleName
 		g.drawString(type.getSimpleName(), xName, yName);
 		int yLine = yName + topAndBottomPadding + textBottomPadding;
-		g.drawLine(0, yLine, getWidth(), yLine);
+		g.drawLine(0 + margin, yLine, getWidth() - margin, yLine);
 
 		// draw attributes
-		int x = sidePaddings;
+		int x = sidePaddings + margin;
 		int y = yLine + topAndBottomPadding + stringHeight;
 		for (String attribute : attributes) {
 			if (attribute.startsWith("S")) {// static
 				g.drawString(attribute.substring(1), x, y);
-				g.drawLine(x, y + 2, fm.stringWidth(attribute), y + 2);
+				g.drawLine(x, y + 2, fm.stringWidth(attribute.substring(1)) + sidePaddings + margin, y + 2);// fm.stringWidth(attribute)
 			} else {
 				g.drawString(attribute, x, y);
 			}
@@ -139,17 +144,23 @@ public class TypeUI extends JPanel {
 		// draw methods
 		y = y - stringHeight - textBottomPadding;
 		y += topAndBottomPadding;
-		g.drawLine(0, y, getWidth(), y);
+		g.drawLine(0 + margin, y, getWidth() - margin, y);
 		y += topAndBottomPadding + stringHeight;// + textBottomPadding
 		for (String method : methods) {
 			if (method.startsWith("S")) {// static
 				g.drawString(method.substring(1), x, y);
-				g.drawLine(x, y + 2, fm.stringWidth(method), y + 2);
+				g.drawLine(x, y + 2, fm.stringWidth(method.substring(1)) + sidePaddings + margin, y + 2);
 			} else {
 				g.drawString(method, x, y);
 			}
 			y += stringHeight + textBottomPadding;
 		}
+		g.drawRect(margin, margin, getWidth() - margin * 2, getHeight() - margin * 2);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(w, h);
 	}
 
 }
