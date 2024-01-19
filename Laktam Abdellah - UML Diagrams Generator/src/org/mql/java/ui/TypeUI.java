@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -23,17 +24,20 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int margin = 25;
+	private int marginLR = 25;
+	private int marginTB = 25;
 	private int textBottomPadding = 3;
 	private int topAndBottomPadding = 6;
 	private int sidePaddings = 5;
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
-	private int h, w;
-	private	String widestString;
+	private int h, w, row, column;
+	private String widestString;
 	private double fontHeight;
+	private static Plan plan = new Plan(5, 6);
+	private Position position;
 
-	public TypeUI(SuperType type) {
+	public TypeUI(SuperType type, int row, int column) {
 		this.attributes = new Vector<String>();
 		this.methods = new Vector<String>();
 //		setBorder(BorderFactory.createLineBorder(Color.black));
@@ -59,15 +63,19 @@ public class TypeUI extends JPanel {
 
 			Type rType = m.getReturnType();
 			if (rType instanceof Class<?>) {
-				s += "): " + ((Class<?>) m.getReturnType()).getTypeName();
+				s += "): " + ((Class<?>) m.getReturnType()).getSimpleName();
 			} else if (rType instanceof ParameterizedType) {
 				s += "): " + FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">");
-//				System.out.println(FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">"));
-
 			}
 			methods.add(s);
 		}
 		calculateSize();
+		this.row = row;
+		this.column = column;
+		plan.setPosition(row, column, w, h, this);
+		this.position = plan.getPosition(row, column);
+		Point p = plan.getDrawingPosition(row, column);
+		setBounds((int) p.getX(), (int) p.getY(), position.getDimension().width, position.getDimension().height);
 	}
 
 	private String transformModifiers(String modifiers) {
@@ -86,7 +94,7 @@ public class TypeUI extends JPanel {
 		}
 		return s;
 	}
-	
+
 	private void calculateSize() {
 		Font font = new Font("Segoe UI", Font.BOLD, 12);
 		setFont(font);
@@ -94,19 +102,19 @@ public class TypeUI extends JPanel {
 		// need to calculate the the longest string to get width
 		List<String> all = new Vector<String>(attributes);
 		all.addAll(methods);
-		 widestString = "";
+		widestString = "";
 		for (String s : all) {
 			if (fm.stringWidth(s) > fm.stringWidth(widestString)) {
 				widestString = s;
 			}
 		}
-		
-		 fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widestString).getVisualBounds().getHeight();
+
+		fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widestString).getVisualBounds().getHeight();
 		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
 
-		w = fm.stringWidth(widestString) + (sidePaddings * 2) + margin * 2;
-		h = (int) height + margin * 2;
-		setSize(w, h);
+		w = fm.stringWidth(widestString) + (sidePaddings * 2) + marginLR * 2;
+		h = (int) height + marginTB * 2;
+		setSize(w, h); 
 	}
 
 	@Override
@@ -116,7 +124,7 @@ public class TypeUI extends JPanel {
 		FontMetrics fm = g.getFontMetrics();
 //		Font font = g.getFont();
 
-		//		List<String> all = new Vector<String>(attributes);
+		// List<String> all = new Vector<String>(attributes);
 //		all.addAll(methods);
 //		String widest = "";
 //		for (String s : all) {
@@ -144,20 +152,20 @@ public class TypeUI extends JPanel {
 		stringHeight = (int) Math.ceil(fontHeight);
 
 		xName = getWidth() / 2 - simpleNameWidth / 2;
-		yName = topAndBottomPadding + stringHeight + margin;
+		yName = topAndBottomPadding + stringHeight + marginTB;
 
 		// draw simpleName
 		g.drawString(type.getSimpleName(), xName, yName);
 		int yLine = yName + topAndBottomPadding + textBottomPadding;
-		g.drawLine(0 + margin, yLine, getWidth() - margin, yLine);
+		g.drawLine(0 + marginLR, yLine, getWidth() - marginLR, yLine);
 
 		// draw attributes
-		int x = sidePaddings + margin;
+		int x = sidePaddings + marginLR;
 		int y = yLine + topAndBottomPadding + stringHeight;
 		for (String attribute : attributes) {
 			if (attribute.startsWith("S")) {// static
 				g.drawString(attribute.substring(1), x, y);
-				g.drawLine(x, y + 2, fm.stringWidth(attribute.substring(1)) + sidePaddings + margin, y + 2);// fm.stringWidth(attribute)
+				g.drawLine(x, y + 2, fm.stringWidth(attribute.substring(1)) + sidePaddings + marginLR, y + 2);// fm.stringWidth(attribute)
 			} else {
 				g.drawString(attribute, x, y);
 			}
@@ -167,24 +175,38 @@ public class TypeUI extends JPanel {
 		// draw methods
 		y = y - stringHeight - textBottomPadding;
 		y += topAndBottomPadding;
-		g.drawLine(0 + margin, y, getWidth() - margin, y);
+		g.drawLine(0 + marginLR, y, getWidth() - marginLR, y);
 		y += topAndBottomPadding + stringHeight;// + textBottomPadding
 		for (String method : methods) {
 			if (method.startsWith("S")) {// static
 				g.drawString(method.substring(1), x, y);
-				g.drawLine(x, y + 2, fm.stringWidth(method.substring(1)) + sidePaddings + margin, y + 2);
+				g.drawLine(x, y + 2, fm.stringWidth(method.substring(1)) + sidePaddings + marginLR, y + 2);
 			} else {
 				g.drawString(method, x, y);
 			}
 			y += stringHeight + textBottomPadding;
 		}
-		g.drawRect(margin, margin, getWidth() - margin * 2, getHeight() - margin * 2);
+		g.drawRect(marginLR, marginTB, getWidth() - marginLR * 2, getHeight() - marginTB * 2);
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		System.out.println("width : " + w + " height : " + h);
 		return new Dimension(w, h);
+	}
+
+	public int getW() {
+		return w;
+	}
+
+	public int getH() {
+		return h;
+	}
+
+	public void setWidth(int width) {
+		Point p = plan.getDrawingPosition(row, column);
+		marginLR += (width - w) / 2;
+		repaint();
+		setBounds((int) p.getX(), (int) p.getY(), width, position.getDimension().height);
 	}
 
 }
