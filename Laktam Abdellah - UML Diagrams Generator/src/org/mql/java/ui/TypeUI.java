@@ -206,7 +206,8 @@ public class TypeUI extends JPanel {
 		Point p = plan.getDrawingPosition(row, column);
 		marginLR += (width - w) / 2;
 		repaint();
-		setBounds((int) p.getX(), (int) p.getY(), width, position.getDimension().height);
+//		plan.setPosition(row, column, width, h, this);
+		setBounds((int) p.getX(), (int) p.getY(), width, h);//position.getDimension().height
 	}
 
 }

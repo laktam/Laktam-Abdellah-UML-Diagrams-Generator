@@ -36,7 +36,7 @@ public class Plan {
 		for (int r = 0; r < positions.length; r++) {
 			positions[r][column].getDimension().width = maxWidth;
 		}
-		for (int r = 0; r < row; r++) {
+		for (int r = 0; r <= row; r++) {
 			//we need to also change the width of the typeUI stored here if there is one
 			//we need also to change positions 
 			positions[r][column].getTypeUi().setWidth(maxWidth);
