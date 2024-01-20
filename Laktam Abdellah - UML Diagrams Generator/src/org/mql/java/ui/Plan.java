@@ -26,8 +26,9 @@ public class Plan {
 		positions[row][column] = new Position(typeUi, new Dimension(width, height), true);
 		// get the max width of a vertical line
 		int maxWidth = 0;
+		int w = 0;
 		for (int r = 0; r < positions.length; r++) {
-			int w = positions[r][column].getDimension().width;
+			w = positions[r][column].getDimension().width;
 			if (w > maxWidth) {
 				maxWidth = w;
 			}
@@ -37,10 +38,13 @@ public class Plan {
 			positions[r][column].getDimension().width = maxWidth;
 		}
 		for (int r = 0; r <= row; r++) {
-			//we need to also change the width of the typeUI stored here if there is one
-			//we need also to change positions 
-			positions[r][column].getTypeUi().setWidth(maxWidth);
-
+			// we need to also change the width of the typeUI stored here if there is one
+			// we need also to change positions
+			if (positions[r][column].getFilled() && positions[r][column].getTypeUi().getW() < maxWidth) {// positions[r][column].getTypeUi()
+																											// != null
+				positions[r][column].getTypeUi().setWidth(maxWidth);
+//				positions[r][column].getDimension().width = maxWidth;//maybe not necessary
+			}
 		}
 	}
 
@@ -48,16 +52,28 @@ public class Plan {
 		int x = 0, y = 0;
 		for (int r = 0; r < row; r++) {
 			y += positions[r][column].getDimension().height;
+//			y += positions[r][column].getTypeUi().getH();
 		}
 		for (int c = 0; c < column; c++) {
 			x += positions[row][c].getDimension().width;
+//			x += positions[row][c].getTypeUi().getW();
 		}
-		
+
 		return new Point(x, y);
-		
+
 	}
-	
+
 	public Position getPosition(int row, int column) {
 		return positions[row][column];
+	}
+
+	public void update(int column) {
+		for (int r = 0; r < positions.length; r++) {
+			for (int c = column + 1; c < positions[r].length; c++) {
+				if (positions[r][c].getFilled()) {
+					positions[r][c].getTypeUi().setWidth(positions[r][c].getTypeUi().getW());//i called setWith here to call set bounds to change X cordinate
+				}
+			}
+		}
 	}
 }

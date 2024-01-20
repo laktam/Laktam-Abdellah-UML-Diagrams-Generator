@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,18 +27,19 @@ public class Drawer extends JFrame {
 	private Project project;
 	private Map<String, JPanel> drawnTypes;
 	private JPanel panel;
-	
+	private PackageType pckg;
+
 	public Drawer(Project project) {
 		this.project = project;
 		this.drawnTypes = new HashMap<String, JPanel>();
-		
+
 		this.panel = new JPanel();
 		panel.setLayout(null);
-		JScrollPane scrollPane = new JScrollPane(panel);  
-		  
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);  
+		JScrollPane scrollPane = new JScrollPane(panel);
 
-		//		setLayout(new FlowLayout());
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+		// setLayout(new FlowLayout());
 		add(scrollPane);
 		pack();
 		setLocationRelativeTo(null);
@@ -46,27 +48,66 @@ public class Drawer extends JFrame {
 	}
 
 	public void drawClassDiagram(String packageFQName) {
-		PackageType pckg = project.getPackage(packageFQName);
+		pckg = project.getPackage(packageFQName);
 		if (pckg != null) {
 //		List<String> fqNames = pckg.getInternalTypes();
 			List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
-
+			packageTypes = packageTypes.reversed();
 			int row = 0;
 			int column = 0;
 			for (SuperType type : packageTypes) {
 				TypeUI typeUi = drawType(type, row, column);
 				column++;
-				if(column == 6) {
+				if (column == 5) {
 					column = 0;
 					row++;
 				}
 
 			}
+//			Set<SuperType> orderedList = new HashSet<SuperType>();
+//			for (SuperType type : packageTypes) {
+//				getTypesInOrder(type, orderedList);
+//			}
+//
+//			int row = 0;
+//			int column = 0;
+//			for (SuperType type : orderedList) {
+//				TypeUI typeUi = drawType(type, row, column);
+//				column++;
+//				if (column == 5) {
+//					column = 0;
+//					row++;
+//				}
+//			}
+			// get all type and look for not drawn one
 
 		}
 
 //		setSize(3000, 3000);
 //		repaint();
+	}
+
+	private void getTypesInOrder(SuperType type, Set<SuperType> orderedList) {
+//		List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
+		Set<Relationship> relationships = type.getRelationshipsSet();
+
+		orderedList.add(type);
+		for (Relationship relationship : relationships) {
+			// maybe draw here
+			String fqName = relationship.getTo().getFQName();
+			if (pckg.isInternal(fqName)) {
+				orderedList.add(pckg.getType(fqName));
+			}
+		}
+		for (Relationship relationship : relationships) {
+			// and draw here
+			String fqName = relationship.getTo().getFQName();
+			if (pckg.isInternal(fqName)) {
+				SuperType t = pckg.getType(relationship.getTo().getFQName());
+				getTypesInOrder(t, orderedList);
+
+			}
+		}
 	}
 
 //	public boolean isDrawn(String fqName) {
@@ -86,5 +127,15 @@ public class Drawer extends JFrame {
 		drawnTypes.put(type.getFQName(), typeUi);
 		panel.add(typeUi);
 		return typeUi;
+	}
+
+	public boolean isDrawn(String fqName) {
+		Set<String> keys = drawnTypes.keySet();
+		for (String s : keys) {
+			if (s.equals(fqName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
