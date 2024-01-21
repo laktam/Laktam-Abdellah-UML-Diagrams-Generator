@@ -21,6 +21,7 @@ import org.mql.java.extraction.PackageType;
 import org.mql.java.extraction.Project;
 import org.mql.java.extraction.SuperType;
 import org.mql.java.extraction.relationships.Relationship;
+import org.mql.java.ui.Plan.Location;
 
 public class Drawer extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -28,6 +29,8 @@ public class Drawer extends JFrame {
 	private Map<String, JPanel> drawnTypes;
 	private JPanel panel;
 	private PackageType pckg;
+	private int row, column;
+	private Plan plan;
 
 	public Drawer(Project project) {
 		this.project = project;
@@ -53,31 +56,49 @@ public class Drawer extends JFrame {
 //		List<String> fqNames = pckg.getInternalTypes();
 			List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
 			packageTypes = packageTypes.reversed();
-			int row = 0;
-			int column = 0;
-			for (SuperType type : packageTypes) {
-				TypeUI typeUi = drawType(type, row, column);
-				column++;
-				if (column == 5) {
-					column = 0;
-					row++;
-				}
-
-			}
-//			Set<SuperType> orderedList = new HashSet<SuperType>();
-//			for (SuperType type : packageTypes) {
-//				getTypesInOrder(type, orderedList);
-//			}
-//
 //			int row = 0;
 //			int column = 0;
-//			for (SuperType type : orderedList) {
+//			for (SuperType type : packageTypes) {
 //				TypeUI typeUi = drawType(type, row, column);
 //				column++;
 //				if (column == 5) {
 //					column = 0;
 //					row++;
 //				}
+//
+//			}
+			Plan plan = new Plan(4, 4);
+			this.plan = plan;
+			TypeUI.setPlan(plan);
+			// set is not ordered
+			List<SuperType> orderedList = new Vector<SuperType>();
+			for (SuperType type : packageTypes) {
+				getTypesInOrder(type, orderedList);
+			}
+
+			orderedList.forEach(System.out::println);
+			System.out.println();
+			SuperType t = project.getType("org.mql.java.semaphores.Semaphore");
+			Set<Relationship> rs = t.getRelationshipsSet();
+			rs.forEach((r) -> {
+				System.out.println(" - type : " + r.getType());
+				System.out.println(" - from : " + r.getFrom().getFQName());
+				System.out.println(" - to : " + r.getTo().getFQName() + "\n");
+
+			});
+			//
+//			int row = 0;
+//			int column = 0;
+//			for (SuperType type : orderedList) {
+//				TypeUI typeUi = drawType(type, row, column);
+//				Location location = plan.getNearestTO(row, column);
+//				column = location.getColumn();
+//				row = location.getRow();
+////				column++;
+////				if (column == plan.getPositions()[row].length) {
+////					column = 0;
+////					row++;
+////				}
 //			}
 			// get all type and look for not drawn one
 
@@ -87,18 +108,41 @@ public class Drawer extends JFrame {
 //		repaint();
 	}
 
-	private void getTypesInOrder(SuperType type, Set<SuperType> orderedList) {
+	private void getTypesInOrder(SuperType type, List<SuperType> orderedList) {
 //		List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
 		Set<Relationship> relationships = type.getRelationshipsSet();
-
-		orderedList.add(type);
+		int refRow = 0;
+		int refColumn = 0;
+		if (!orderedList.contains(type)) {
+			orderedList.add(type);
+			refRow = row;
+			refColumn = column;
+			drawType(type, row, column);
+			Location location = plan.getNearestTO(refRow, refRow);
+			row = location.getRow();
+			column = location.getColumn();
+		}
 		for (Relationship relationship : relationships) {
 			// maybe draw here
 			String fqName = relationship.getTo().getFQName();
-			if (pckg.isInternal(fqName)) {
-				orderedList.add(pckg.getType(fqName));
+			if (pckg.isInternal(fqName) && !orderedList.contains(pckg.getType(fqName))) {
+				SuperType t = pckg.getType(fqName);
+				orderedList.add(t);
+				drawType(t, row, column);
+				Location location = plan.getNearestTO(refRow, refRow);
+				row = location.getRow();
+				column = location.getColumn();
 			}
 		}
+		
+		Location location = plan.getEmptySpot();
+		row = location.getRow();
+		column = location.getColumn();
+//		column++;
+//		if(column > plan.getPositions()[row].length) {
+//			column = 0;
+//			row++;
+//		}
 		for (Relationship relationship : relationships) {
 			// and draw here
 			String fqName = relationship.getTo().getFQName();

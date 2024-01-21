@@ -24,7 +24,7 @@ public class Position {
 		this.filled = filled;
 	}
 	
-	public boolean getFilled() {
+	public boolean isFilled() {
 		return filled;
 	}
 

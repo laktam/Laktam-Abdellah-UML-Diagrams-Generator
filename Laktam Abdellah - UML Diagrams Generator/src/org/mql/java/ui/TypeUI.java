@@ -34,7 +34,7 @@ public class TypeUI extends JPanel {
 	private int h, w, row, column;
 	private String widestString;
 	private double fontHeight;
-	private static Plan plan = new Plan(5, 5);
+	private static Plan plan;
 	private Position position;
 
 	public TypeUI(SuperType type, int row, int column) {
@@ -212,4 +212,7 @@ public class TypeUI extends JPanel {
 		plan.update(column);
 	}
 
+	public static void setPlan(Plan plan) {
+		TypeUI.plan = plan;
+	}
 }
