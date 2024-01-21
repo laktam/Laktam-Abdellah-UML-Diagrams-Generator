@@ -102,6 +102,7 @@ public class TypeUI extends JPanel {
 		// need to calculate the the longest string to get width
 		List<String> all = new Vector<String>(attributes);
 		all.addAll(methods);
+		all.add(type.getSimpleName());
 		widestString = "";
 		for (String s : all) {
 			if (fm.stringWidth(s) > fm.stringWidth(widestString)) {
@@ -110,7 +111,7 @@ public class TypeUI extends JPanel {
 		}
 
 		fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widestString).getVisualBounds().getHeight();
-		double height = (fontHeight + textBottomPadding) * (all.size() + 1) + topAndBottomPadding * 6;
+		double height = (fontHeight + textBottomPadding) * (all.size() ) + topAndBottomPadding * 6;
 
 		w = fm.stringWidth(widestString) + (sidePaddings * 2) + marginLR * 2;
 		h = (int) height + marginTB * 2;
