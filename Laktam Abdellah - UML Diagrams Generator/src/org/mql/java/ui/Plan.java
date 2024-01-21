@@ -83,7 +83,7 @@ public class Plan {
 //
 //	}
 
-	public Location getNearestTO(int row, int column) {
+	public Location getNearestTo(int row, int column) {
 		// maybe just make this decide on positioning ? and check also this(row, column)
 		// if isFilled
 		// look for closest !isFilled
@@ -185,6 +185,20 @@ public class Plan {
 		return new Location(closestR, closestC);
 	}
 
+	public Location getTypeLocation(TypeUI typeUi) {
+		for (int r = 0; r < positions.length; r++) {
+			for (int c = 0; c < positions[r].length; c++) {
+				Position pos = positions[r][c];
+				if (pos.isFilled()) {
+					if (pos.getTypeUi().equals(typeUi)) {
+						return new Location(r, c);
+					}
+				}
+			}
+		}
+		return null;// not drawn
+	}
+
 	public Position[][] getPositions() {
 		return positions;
 	}
@@ -198,7 +212,7 @@ public class Plan {
 				}
 			}
 		}
-		return null;//full
+		return null;// full
 	}
 
 	class Location {
