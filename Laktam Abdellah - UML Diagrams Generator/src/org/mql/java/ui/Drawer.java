@@ -74,7 +74,7 @@ public class Drawer extends JFrame {
 //			}
 
 			int size = (int) Math.ceil(Math.sqrt(packageTypes.size()));
-			Plan plan = new Plan(size, size);
+			Plan plan = new Plan(size, size, panel);
 			this.plan = plan;
 			TypeUI.setPlan(plan);
 

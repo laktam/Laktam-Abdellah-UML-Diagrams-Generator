@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import javax.sound.sampled.LineEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
@@ -27,8 +29,8 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int marginLR = 30;
-	private int marginTB = 30;
+	private int marginLR = 40;
+	private int marginTB = 40;
 	private int textBottomPadding = 3;
 	private int topAndBottomPadding = 6;
 	private int sidePaddings = 6;
@@ -253,7 +255,8 @@ public class TypeUI extends JPanel {
 		return new Point(x, y);
 	}
 
-	// 0 : top is closest => draw from bottom of this component to top of the other one
+	// 0 : top is closest => draw from bottom of this component to top of the other
+	// one
 	// 1 : left
 	// 2 : right
 	// 3 : bottom
@@ -267,21 +270,32 @@ public class TypeUI extends JPanel {
 		double minElement = Collections.min(arr);
 		return arr.indexOf(minElement);
 	}
-	
-	public Point[] getClosestPoints(TypeUI to){
+
+	public Point[] getClosestPoints(TypeUI to) {
 		double distance0 = this.getBottomPoint().distance(to.getTopPoint());
 		double distance1 = this.getRightPoint().distance(to.getLeftPoint());
 		double distance2 = this.getLeftPoint().distance(to.getRightPoint());
 		double distance3 = this.getTopPoint().distance(to.getBottomPoint());
-		List<Point[]> points = Arrays.asList(
-				new Point[] {this.getBottomPoint(),to.getTopPoint()},
-				new Point[] {this.getRightPoint(),to.getLeftPoint()},
-				new Point[] {this.getLeftPoint(),to.getRightPoint()},
-				new Point[] {this.getTopPoint(),to.getBottomPoint()});
+		List<Point[]> points = Arrays.asList(new Point[] { this.getBottomPoint(), to.getTopPoint() },
+				new Point[] { this.getRightPoint(), to.getLeftPoint() },
+				new Point[] { this.getLeftPoint(), to.getRightPoint() },
+				new Point[] { this.getTopPoint(), to.getBottomPoint() });
 		List<Double> arr = Arrays.asList(distance0, distance1, distance2, distance3);
 
 		double minDist = Collections.min(arr);
 		return points.get(arr.indexOf(minDist));
+	}
+
+	//check if point is in the inner rectangle 
+	public boolean containsPoint(Point p) {
+		Rectangle rect = new Rectangle();
+		rect.setBounds(getLocation().x, getLocation().y, w - marginLR * 2, h - marginTB * 2);
+		return rect.contains(p);
+	}
+	public boolean containsPoint(double x, double y) {
+		Rectangle rect = new Rectangle();
+		rect.setBounds(getLocation().x + marginLR, getLocation().y + marginTB, w - marginLR * 2, h - marginTB * 2);
+		return rect.contains(x, y);
 	}
 
 	public SuperType getType() {

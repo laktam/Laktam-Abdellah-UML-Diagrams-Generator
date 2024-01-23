@@ -2,7 +2,12 @@ package org.mql.java.ui;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Line2D;
+import java.awt.geom.PathIterator;
 import java.util.List;
+
+import javax.swing.JPanel;
 
 import org.mql.java.extraction.relationships.Relationship;
 
@@ -12,9 +17,11 @@ public class Plan {
 //	private List<Integer> width;
 
 	private Position[][] positions;
+	private JPanel container;// the plan types are drawn on this container
 
-	public Plan(int rows, int columns) {
+	public Plan(int rows, int columns, JPanel container) {
 		// init
+		this.container = container;
 		this.positions = new Position[rows][columns];
 		for (int row = 0; row < positions.length; row++) {// rows
 			for (int column = 0; column < positions[row].length; column++) {
@@ -227,13 +234,53 @@ public class Plan {
 		return null;// full
 	}
 
-	public void drawRelationship(Relationship r) {
-		Location from = getTypeLocation(r.getFrom().getFQName());
-		Location to = getTypeLocation(r.getTo().getFQName());
+//	public void drawRelationship(Relationship r) {
+//		Location from = getTypeLocation(r.getFrom().getFQName());
+//		Location to = getTypeLocation(r.getTo().getFQName());
+//
+//	}
 
+	public boolean canDraw(Point p1, Point p2) {//
+		TypeUI from = (TypeUI) container.getComponentAt(p1);
+		TypeUI to = (TypeUI) container.getComponentAt(p2);
+//		System.out.println(from.getType().getFQName());
+		// go through all components and check if we don't cross the inner rectangle
+		// (TypeUI.containsPoint(Point))
+//		Line2D line = new Line2D.Double(p1, p2);
+		int numPoints = (int) Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y)) + 1;
+
+		// increment for x and y
+		double dx = (p2.x - p1.x) / (numPoints - 1);
+	    double dy = (p2.y - p1.y) / (numPoints - 1);
+		for (int i = 0; i < numPoints; i++) {
+			double x = p1.x + i * dx;
+			double y = p1.y + i * dy;
+			System.out.println(x + ", " +y);
+			// loop through all types to see if we cross there inner rectangle
+			for (int r = 0; r < positions.length; r++) {
+				for (int c = 0; c < positions[r].length; c++) {
+					TypeUI posType = positions[r][c].getTypeUi();
+					// need to exclude start and finish types and empty spots
+					if (positions[r][c].isFilled() && !posType.equals(from) && !posType.equals(to)) {
+						if (posType.containsPoint(x, y)) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 
-	
+//	// from p1 to p2
+//	public Polyline getPolyline(Point p1, Point p2, JPanel container) {
+//		Polyline polyline = new Polyline();
+//		polyline.addPoint(p1);
+//		TypeUI from = (TypeUI) container.getComponentAt(p1);
+//
+//
+//		polyline.addPoint(p2);
+//	}
 
 	class Location {
 		private int row;

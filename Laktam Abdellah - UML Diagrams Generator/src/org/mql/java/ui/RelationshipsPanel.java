@@ -37,14 +37,24 @@ public class RelationshipsPanel extends JPanel {
 			if (pckg.isInternal(r.getFrom().getFQName()) && pckg.isInternal(r.getTo().getFQName())) {
 				TypeUI fromTypeUi = drawnTypes.get(r.getFrom().getFQName());
 				TypeUI toTypeUi = drawnTypes.get(r.getTo().getFQName());
-				System.out.println("type location " + fromTypeUi.getLocation().x + ", " + fromTypeUi.getLocation().y);
+//				System.out.println("type location " + fromTypeUi.getLocation().x + ", " + fromTypeUi.getLocation().y);
 //				int sides = fromTypeUi.getClosestSideTo(toTypeUi);
 				Point[] points = fromTypeUi.getClosestPoints(toTypeUi);
 				Point p1 = points[0];
 				Point p2 = points[1];
-				System.out.println("from : " + p1.x + ", " + p1.y  + " to : " + p2.x + ", " + p2.y);
-				g.drawLine(p1.x, p1.y, p2.x, p2.y);
+//				System.out.println("from : " + p1.x + ", " + p1.y + " to : " + p2.x + ", " + p2.y);
+				// if !canDraw : (can draw mean doesn't pass through another type (margin not
+				// included))
+				// line to closest corner (by corner i don't mean the exact corner but a little
+				// bit to the inside (with a counter local to each type))
+				// else direct line
+				System.out.println(plan.canDraw(p1, p2));
+				if (plan.canDraw(p1, p2)) {
+					g.drawLine(p1.x, p1.y, p2.x, p2.y);
+				}
+
 			}
 		}
 	}
+
 }
