@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,6 +16,7 @@ import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -43,7 +45,7 @@ public class Drawer extends JFrame {
 		panel.setLayout(null);
 		JScrollPane scrollPane = new JScrollPane(panel);
 
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		// setLayout(new FlowLayout());
 		add(scrollPane);
@@ -58,7 +60,7 @@ public class Drawer extends JFrame {
 		if (pckg != null) {
 //		List<String> fqNames = pckg.getInternalTypes();
 			List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
-			packageTypes = packageTypes.reversed();
+//			packageTypes = packageTypes.reversed();
 //			int row = 0;
 //			int column = 0;
 //			for (SuperType type : packageTypes) {
@@ -70,7 +72,9 @@ public class Drawer extends JFrame {
 //				}
 //
 //			}
-			Plan plan = new Plan(4, 4);
+
+			int size = (int) Math.ceil(Math.sqrt(packageTypes.size()));
+			Plan plan = new Plan(size, size);
 			this.plan = plan;
 			TypeUI.setPlan(plan);
 
@@ -105,31 +109,97 @@ public class Drawer extends JFrame {
 						if (r.getType().equals("implementation") && r.getTo().getFQName().equals(i.getFQName())) {
 							Location location2 = plan.getNearestTo(location.getRow(), location.getColumn());
 							drawType(c, location2.getRow(), location2.getColumn());
-							
+
 						}
 					}
 				}
 			}
 			// look for classes that extends them
-//			Set<String> keys = drawnTypes.keySet();
 			String[] keys = drawnTypes.keySet().toArray(new String[0]);
-//			Iterator<Entry<String, TypeUI>> it = entries.iterator();
 			for (String fqName : keys) {
 				TypeUI type = drawnTypes.get(fqName);
 				SuperType drawnClass = pckg.getType(fqName);
 				Set<Relationship> rs = pckg.getRelationshipsSet();
-				
+
 				for (Relationship r : rs) {
-					if(r.getType().equals("extension") && r.getTo().getFQName().equals(drawnClass.getFQName())) {
+					if (r.getType().equals("extension") && r.getTo().getFQName().equals(drawnClass.getFQName())) {
 						Location location = plan.getTypeLocation(type);
 						Location nearestL = plan.getNearestTo(location.getRow(), location.getColumn());
 						TypeUI typeUi = drawType(r.getFrom().getFQName(), nearestL.getRow(), nearestL.getColumn());
-//						drawnTypes.put(r.getFrom().getFQName(), typeUi);
 					}
 				}
-
-
 			}
+			// look for relations from drawnClasses
+			String[] fqNames = drawnTypes.keySet().toArray(new String[0]);
+			for (String fqName : fqNames) {
+				TypeUI type = drawnTypes.get(fqName);
+				SuperType drawnClass = pckg.getType(fqName);
+				Location location = plan.getTypeLocation(type);
+				Set<Relationship> rs = drawnClass.getRelationshipsSet();
+				for (Relationship r : rs) {
+					// extension and implementations already drawn
+					if (pckg.isInternal(r.getTo().getFQName())) {
+						Location nearestL = plan.getNearestTo(location.getRow(), location.getColumn());
+						drawType(r.getTo().getFQName(), nearestL.getRow(), nearestL.getColumn());
+					}
+
+				}
+			}
+			// look for relationships to drawnTypes (draw getFrom())
+			fqNames = drawnTypes.keySet().toArray(new String[0]);
+			for (String fqName : fqNames) {
+				TypeUI type = drawnTypes.get(fqName);
+//				SuperType drawnClass = pckg.getType(fqName);
+				Location location = plan.getTypeLocation(type);
+				Set<Relationship> rs = pckg.getRelationshipsSet();
+				for (Relationship r : rs) {
+					// extension and implementations already drawn
+					if (r.getTo().getFQName().equals(fqName) && pckg.isInternal(r.getFrom().getFQName())) {
+						Location nearestL = plan.getNearestTo(location.getRow(), location.getColumn());
+						drawType(r.getFrom().getFQName(), nearestL.getRow(), nearestL.getColumn());
+					}
+
+				}
+			}
+			// look if rest of types have any relation from or to drawn types
+			for (SuperType type : packageTypes) {
+				Set<Relationship> rs = pckg.getRelationshipsSet();
+				if (!isDrawn(type.getFQName())) {
+					for (Relationship r : rs) { // isdrawn mean also is internal
+						if (r.getFrom().getFQName().equals(type.getFQName()) && isDrawn(r.getTo().getFQName())) {
+							// draw it near type in To
+							Location location = plan.getTypeLocation(drawnTypes.get(r.getTo().getFQName()));
+							Location nearesrL = plan.getNearestTo(location.getRow(), location.getColumn());
+							drawType(r.getFrom().getFQName(), nearesrL.getRow(), nearesrL.getColumn());
+						} else if (r.getTo().getFQName().equals(type.getFQName()) && isDrawn(r.getFrom().getFQName())) {
+							// draw it near type in To
+							Location location = plan.getTypeLocation(drawnTypes.get(r.getFrom().getFQName()));
+							Location nearesrL = plan.getNearestTo(location.getRow(), location.getColumn());
+							drawType(r.getTo().getFQName(), nearesrL.getRow(), nearesrL.getColumn());
+						}
+					}
+
+				}
+			}
+
+//			 draw rest of types and there relations
+			for (SuperType type : packageTypes) {
+				Location location = plan.getEmptySpot();
+				drawType(type, location.getRow(), location.getColumn());
+
+				Set<Relationship> rs = type.getRelationshipsSet();
+				for (Relationship r : rs) {
+					if (pckg.isInternal(r.getTo().getFQName())) {
+						Location nearestL = plan.getNearestTo(location.getRow(), location.getColumn());
+						drawType(r.getTo().getFQName(), nearestL.getRow(), nearestL.getColumn());
+					}
+
+				}
+			}
+		}
+
+		drawRelationships();
+
 //			while(it.hasNext()) {
 //				Entry<String, TypeUI> entry = it.next();
 //				String fqName = entry.getKey();
@@ -144,11 +214,11 @@ public class Drawer extends JFrame {
 //					}
 //				}
 //			}
-			
+
 //			for (Entry<String, TypeUI> entry : entries) {
 //				
 //			}
-			//
+		//
 //			orderedList.forEach(System.out::println);
 //			System.out.println();
 //			SuperType t = project.getType("org.mql.java.semaphores.Semaphore");
@@ -160,8 +230,13 @@ public class Drawer extends JFrame {
 //
 //			});
 
-		}
+	}
 
+	private void drawRelationships() {
+		Set<Relationship> relationships = pckg.getRelationshipsSet();
+		RelationshipsPanel rPanel = new RelationshipsPanel(relationships, pckg, plan, drawnTypes);
+		setGlassPane(rPanel);
+		getGlassPane().setVisible(true);
 	}
 
 	private void getTypesInOrder(SuperType type, List<SuperType> orderedList) {
@@ -205,7 +280,6 @@ public class Drawer extends JFrame {
 			if (pckg.isInternal(fqName)) {
 				SuperType t = pckg.getType(relationship.getTo().getFQName());
 				getTypesInOrder(t, orderedList);
-
 			}
 		}
 	}
@@ -228,7 +302,8 @@ public class Drawer extends JFrame {
 		if (!isDrawn(fqName)) {
 			SuperType type = project.getType(fqName);
 			TypeUI typeUi = new TypeUI(type, row, column);
-			drawnTypes.put(type.getFQName(), typeUi);//i commented this to not have concurentModification while looping throught the map
+			drawnTypes.put(type.getFQName(), typeUi);// i commented this to not have concurentModification while looping
+														// throught the map
 			panel.add(typeUi);
 			return typeUi;
 		}

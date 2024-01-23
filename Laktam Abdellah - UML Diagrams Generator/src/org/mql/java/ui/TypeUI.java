@@ -8,6 +8,9 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,11 +27,11 @@ public class TypeUI extends JPanel {
 	private SuperType type;
 	private int centerX;
 	private int centerY;
-	private int marginLR = 25;
-	private int marginTB = 25;
+	private int marginLR = 30;
+	private int marginTB = 30;
 	private int textBottomPadding = 3;
 	private int topAndBottomPadding = 6;
-	private int sidePaddings = 5;
+	private int sidePaddings = 6;
 	private List<String> attributes;// visibility attribut: Type
 	private List<String> methods;// visibility method(param1: Type, param2: Type): Type_de_retour
 	private int h, w, row, column;
@@ -40,6 +43,7 @@ public class TypeUI extends JPanel {
 	public TypeUI(SuperType type, int row, int column) {
 		this.attributes = new Vector<String>();
 		this.methods = new Vector<String>();
+//		setOpaque(true);
 //		setBorder(BorderFactory.createLineBorder(Color.black));
 
 		this.type = type;
@@ -111,11 +115,11 @@ public class TypeUI extends JPanel {
 		}
 
 		fontHeight = font.createGlyphVector(fm.getFontRenderContext(), widestString).getVisualBounds().getHeight();
-		double height = (fontHeight + textBottomPadding) * (all.size() ) + topAndBottomPadding * 6;
+		double height = (fontHeight + textBottomPadding) * (all.size()) + topAndBottomPadding * 6;
 
 		w = fm.stringWidth(widestString) + (sidePaddings * 2) + marginLR * 2;
 		h = (int) height + marginTB * 2;
-		setSize(w, h); 
+		setSize(w, h);
 	}
 
 	@Override
@@ -209,11 +213,87 @@ public class TypeUI extends JPanel {
 		w = width;
 //		repaint();
 //		plan.setPosition(row, column, width, h, this);
-		setBounds((int) p.getX(), (int) p.getY(), width, h);//position.getDimension().height
+		setBounds((int) p.getX(), (int) p.getY(), width, h);// position.getDimension().height
 		plan.update(column);
 	}
 
 	public static void setPlan(Plan plan) {
 		TypeUI.plan = plan;
 	}
+
+	public Point getTopPoint() {
+		int x = 0, y = 0;
+		Point ref = getLocation();
+		x = (int) ref.getX() + w / 2;
+		y = (int) ref.getY() + marginTB;
+		return new Point(x, y);
+	}
+
+	public Point getBottomPoint() {
+		int x = 0, y = 0;
+		Point ref = getLocation();
+		x = (int) ref.getX() + w / 2;
+		y = (int) ref.getY() + h - marginTB;
+		return new Point(x, y);
+	}
+
+	public Point getLeftPoint() {
+		int x = 0, y = 0;
+		Point ref = getLocation();
+		x = (int) ref.getX() + marginLR;
+		y = (int) ref.getY() + h / 2;
+		return new Point(x, y);
+	}
+
+	public Point getRightPoint() {
+		int x = 0, y = 0;
+		Point ref = getLocation();
+		x = (int) ref.getX() + w - marginLR;
+		y = (int) ref.getY() + h / 2;
+		return new Point(x, y);
+	}
+
+	// 0 : top is closest => draw from bottom of this component to top of the other one
+	// 1 : left
+	// 2 : right
+	// 3 : bottom
+	public int getClosestSideTo(TypeUI to) {
+//		TypeUI to = plan.getPosition(row, column).getTypeUi();
+		double distance0 = this.getBottomPoint().distance(to.getTopPoint());
+		double distance1 = this.getRightPoint().distance(to.getLeftPoint());
+		double distance2 = this.getLeftPoint().distance(to.getRightPoint());
+		double distance3 = this.getTopPoint().distance(to.getBottomPoint());
+		List<Double> arr = Arrays.asList(distance0, distance1, distance2, distance3);
+		double minElement = Collections.min(arr);
+		return arr.indexOf(minElement);
+	}
+	
+	public Point[] getClosestPoints(TypeUI to){
+		double distance0 = this.getBottomPoint().distance(to.getTopPoint());
+		double distance1 = this.getRightPoint().distance(to.getLeftPoint());
+		double distance2 = this.getLeftPoint().distance(to.getRightPoint());
+		double distance3 = this.getTopPoint().distance(to.getBottomPoint());
+		List<Point[]> points = Arrays.asList(
+				new Point[] {this.getBottomPoint(),to.getTopPoint()},
+				new Point[] {this.getRightPoint(),to.getLeftPoint()},
+				new Point[] {this.getLeftPoint(),to.getRightPoint()},
+				new Point[] {this.getTopPoint(),to.getBottomPoint()});
+		List<Double> arr = Arrays.asList(distance0, distance1, distance2, distance3);
+
+		double minDist = Collections.min(arr);
+		return points.get(arr.indexOf(minDist));
+	}
+
+	public SuperType getType() {
+		return type;
+	}
+
+	public int getMarginLR() {
+		return marginLR;
+	}
+
+	public int getMarginTB() {
+		return marginTB;
+	}
+
 }

@@ -18,12 +18,12 @@ public class Position {
 		this.filled = filled;
 	}
 
-
+	
 
 	public void setFilled(boolean filled) {
 		this.filled = filled;
 	}
-	
+
 	public boolean isFilled() {
 		return filled;
 	}
@@ -43,8 +43,5 @@ public class Position {
 	public void setDimension(Dimension dimension) {
 		this.dimension = dimension;
 	}
-
-	
-	
 
 }

@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.List;
 
+import org.mql.java.extraction.relationships.Relationship;
+
 public class Plan {
 //	private int columns;
 //	private List<Integer> heights;
@@ -78,10 +80,6 @@ public class Plan {
 			}
 		}
 	}
-
-//	public void distanceTo(int fromRow, int fromColumn, int toRow, int toColumn) {
-//
-//	}
 
 	public Location getNearestTo(int row, int column) {
 		// maybe just make this decide on positioning ? and check also this(row, column)
@@ -199,6 +197,20 @@ public class Plan {
 		return null;// not drawn
 	}
 
+	public Location getTypeLocation(String fqName) {
+		for (int r = 0; r < positions.length; r++) {
+			for (int c = 0; c < positions[r].length; c++) {
+				Position pos = positions[r][c];
+				if (pos.isFilled()) {
+					if (pos.getTypeUi().getType().getFQName().equals(fqName)) {
+						return new Location(r, c);
+					}
+				}
+			}
+		}
+		return null;// not drawn
+	}
+
 	public Position[][] getPositions() {
 		return positions;
 	}
@@ -215,9 +227,17 @@ public class Plan {
 		return null;// full
 	}
 
+	public void drawRelationship(Relationship r) {
+		Location from = getTypeLocation(r.getFrom().getFQName());
+		Location to = getTypeLocation(r.getTo().getFQName());
+
+	}
+
+	
+
 	class Location {
-		int row;
-		int column;
+		private int row;
+		private int column;
 
 		public Location(int row, int column) {
 			this.row = row;
