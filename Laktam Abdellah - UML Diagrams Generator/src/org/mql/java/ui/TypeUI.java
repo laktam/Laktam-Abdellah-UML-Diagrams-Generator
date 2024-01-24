@@ -41,6 +41,7 @@ public class TypeUI extends JPanel {
 	private double fontHeight;
 	private static Plan plan;
 	private Position position;
+	private int cornerCounter = 15;
 
 	public TypeUI(SuperType type, int row, int column) {
 		this.attributes = new Vector<String>();
@@ -280,22 +281,105 @@ public class TypeUI extends JPanel {
 				new Point[] { this.getRightPoint(), to.getLeftPoint() },
 				new Point[] { this.getLeftPoint(), to.getRightPoint() },
 				new Point[] { this.getTopPoint(), to.getBottomPoint() });
-		List<Double> arr = Arrays.asList(distance0, distance1, distance2, distance3);
+		List<Double> distances = Arrays.asList(distance0, distance1, distance2, distance3);
 
-		double minDist = Collections.min(arr);
-		return points.get(arr.indexOf(minDist));
+		double minDist = Collections.min(distances);
+		return points.get(distances.indexOf(minDist));
 	}
 
-	//check if point is in the inner rectangle 
+	// check if point is in the inner rectangle
 	public boolean containsPoint(Point p) {
 		Rectangle rect = new Rectangle();
 		rect.setBounds(getLocation().x, getLocation().y, w - marginLR * 2, h - marginTB * 2);
 		return rect.contains(p);
 	}
+
 	public boolean containsPoint(double x, double y) {
+		Rectangle rect = getInsideRectangle();
+//		rect.setBounds(getLocation().x + marginLR, getLocation().y + marginTB, w - marginLR * 2, h - marginTB * 2);
+		return rect.contains(x, y);
+	}
+
+	public Rectangle getInsideRectangle() {
 		Rectangle rect = new Rectangle();
 		rect.setBounds(getLocation().x + marginLR, getLocation().y + marginTB, w - marginLR * 2, h - marginTB * 2);
-		return rect.contains(x, y);
+		return rect;
+	}
+
+	public Point getClosestCorner(Point p) {
+		Point corners[] = getDrawingCorners();
+		double distance0 = p.distance(corners[0]);
+		double distance1 = p.distance(corners[1]);
+		double distance2 = p.distance(corners[2]);
+		double distance3 = p.distance(corners[3]);
+		List<Double> distances = Arrays.asList(distance0, distance1, distance2, distance3);
+		double minDist = Collections.min(distances);
+		return corners[distances.indexOf(minDist)];
+	}
+
+//	public Point getClosestCorner(Point p,List<Point> cornersUsed) {
+//		Point corners[] = getDrawingCorners();
+//		double distance0 = p.distance(corners[0]);
+//		double distance1 = p.distance(corners[1]);
+//		double distance2 = p.distance(corners[2]);
+//		double distance3 = p.distance(corners[3]);
+//		List<Double> distances = Arrays.asList(distance0, distance1, distance2, distance3);
+//		double minDist = Collections.min(distances);
+//		return corners[distances.indexOf(minDist)];
+//	}
+
+	public Point getNextCorner(Point p, List<Point> cornersUsed) {
+		if (cornersUsed.size() == 0) {
+			return getClosestCorner(p);
+		} else {
+			List<Point> cornersList = new Vector<Point>();
+			Point corners[] = getDrawingCorners();
+			for (Point point : corners) {
+				cornersList.add(point);
+			}
+//			List<Point> cornersList = Arrays.asList(corners);
+			cornersList.removeAll(cornersUsed);// ??????
+			double minDist = 100000000000.0;
+			if (!cornersList.isEmpty()) {
+				Point nextCorner = cornersList.get(0);
+				for (Point c : cornersList) {
+					if (c.distance(p) < minDist) {
+						minDist = c.distance(p);
+						nextCorner = c;
+					}
+				}
+				return nextCorner;
+			}
+
+		}
+		return new Point(0, 0);
+
+	}
+
+	public Point[] getDrawingCorners() {
+//		Point corners[] = new Point[] {
+//				new Point(getLocation().x + marginLR - cornerCounter, getLocation().y + marginTB - cornerCounter), // top
+//																													// left
+//				new Point(getLocation().x + w - (marginLR - cornerCounter), getLocation().y + marginTB - cornerCounter), // top
+//																															// right
+//				new Point(getLocation().x + marginLR - cornerCounter, getLocation().y + h - (marginTB - cornerCounter)), // bottom
+//																															// left
+//				new Point(getLocation().x + w - (marginLR - cornerCounter),
+//						getLocation().y + h - (marginTB - cornerCounter)) // bottom right
+//		};
+//		cornerCounter += 3;
+//		return corners;
+
+		Rectangle rect = new Rectangle();
+		rect.setBounds(getLocation().x + marginLR - cornerCounter, getLocation().y + marginTB - cornerCounter,
+				w - marginLR * 2 + cornerCounter * 2, h - marginTB * 2 + cornerCounter * 2);
+		Point corners[] = new Point[] { new Point(rect.getLocation().x, rect.getLocation().y), // top left
+				new Point(rect.getLocation().x + rect.width, rect.getLocation().y), // top right
+				new Point(rect.getLocation().x, rect.getLocation().y + rect.height), // bottom left
+				new Point(rect.getLocation().x + rect.width, rect.getLocation().y + rect.height) // bottom right
+		};
+		return corners;
+
 	}
 
 	public SuperType getType() {

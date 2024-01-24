@@ -3,9 +3,11 @@ package org.mql.java.ui;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -243,19 +245,17 @@ public class Plan {
 	public boolean canDraw(Point p1, Point p2) {//
 		TypeUI from = (TypeUI) container.getComponentAt(p1);
 		TypeUI to = (TypeUI) container.getComponentAt(p2);
-//		System.out.println(from.getType().getFQName());
 		// go through all components and check if we don't cross the inner rectangle
 		// (TypeUI.containsPoint(Point))
-//		Line2D line = new Line2D.Double(p1, p2);
+
 		int numPoints = (int) Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y)) + 1;
 
 		// increment for x and y
 		double dx = (p2.x - p1.x) / (numPoints - 1);
-	    double dy = (p2.y - p1.y) / (numPoints - 1);
+		double dy = (p2.y - p1.y) / (numPoints - 1);
 		for (int i = 0; i < numPoints; i++) {
 			double x = p1.x + i * dx;
 			double y = p1.y + i * dy;
-			System.out.println(x + ", " +y);
 			// loop through all types to see if we cross there inner rectangle
 			for (int r = 0; r < positions.length; r++) {
 				for (int c = 0; c < positions[r].length; c++) {
@@ -272,15 +272,140 @@ public class Plan {
 		return true;
 	}
 
-//	// from p1 to p2
-//	public Polyline getPolyline(Point p1, Point p2, JPanel container) {
-//		Polyline polyline = new Polyline();
-//		polyline.addPoint(p1);
-//		TypeUI from = (TypeUI) container.getComponentAt(p1);
-//
-//
-//		polyline.addPoint(p2);
-//	}
+	// this second candraw alse take into account the type that contains p1 so we
+	// draw around
+	// it
+	public boolean canDraw(Point p1, Point p2, boolean takeP1TypeIntoAccount) {//
+		TypeUI from = (TypeUI) container.getComponentAt(p1);
+		TypeUI to = (TypeUI) container.getComponentAt(p2);
+		// go through all components and check if we don't cross the inner rectangle
+		// (TypeUI.containsPoint(Point))
+
+		int numPoints = (int) Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y)) + 1;
+
+		// increment for x and y
+		double dx = (p2.x - p1.x) / (numPoints - 1);
+		double dy = (p2.y - p1.y) / (numPoints - 1);
+		for (int i = 0; i < numPoints; i++) {
+			double x = p1.x + i * dx;
+			double y = p1.y + i * dy;
+//			System.out.println(x + ", " + y);
+			// loop through all types to see if we cross there inner rectangle
+			for (int r = 0; r < positions.length; r++) {
+				for (int c = 0; c < positions[r].length; c++) {
+					TypeUI posType = positions[r][c].getTypeUi();
+					// need to exclude start and finish types and empty spots
+					// (unless takeP1TypeIntoAccount == true)
+					if (takeP1TypeIntoAccount == false) {
+						if (positions[r][c].isFilled() && !posType.equals(from) && !posType.equals(to)) {
+							if (posType.containsPoint(x, y)) {
+								return false;
+							}
+						}
+					} else {
+						if (positions[r][c].isFilled() && !posType.equals(to)) {
+							if (posType.containsPoint(x, y)) {
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	// this one use shape intersection
+	public boolean intersectionExistWithAType(Point p1, Point p2, boolean takeP1TypeIntoAccount) {//
+		TypeUI from = (TypeUI) container.getComponentAt(p1);
+		TypeUI to = (TypeUI) container.getComponentAt(p2);
+		// go through all components and check if we don't cross the inner rectangle
+		// (TypeUI.containsPoint(Point))
+		Line2D line = new Line2D.Double(p1, p2);
+
+		// loop through all types to see if we cross there inner rectangle
+		for (int r = 0; r < positions.length; r++) {
+			for (int c = 0; c < positions[r].length; c++) {
+				TypeUI posType = positions[r][c].getTypeUi();
+				// need to exclude start and finish types and empty spots
+				// (unless takeP1TypeIntoAccount == true)
+				if (takeP1TypeIntoAccount == false) {
+					if (positions[r][c].isFilled() && !posType.equals(from) && !posType.equals(to)) {
+						if (posType.getInsideRectangle().intersectsLine(line)) {
+							return true;
+						}
+					}
+				} else {
+					if (positions[r][c].isFilled() && !posType.equals(to)) {
+//							if (posType.containsPoint(x, y)) {
+//								return false;
+//							}
+//						Area rectangle = new Area(posType.getInsideRectangle());
+						if (posType.getInsideRectangle().intersectsLine(line)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	// from p1 to p2
+	public Polyline getPolyline(Point p1, Point p2) {
+		Polyline polyline = new Polyline();
+		polyline.addPoint(p1);
+		TypeUI crossedType = getCrossedType(p1, p2);
+		System.out.println("crossed type" + crossedType.getType().getFQName());
+		List<Point> cornersUsed = new Vector<Point>();
+		boolean takeP1IntoAccount = false;
+//		while (intersectionExistWithAType(p1, p2, takeP1IntoAccount)) {
+//			// add a copies and change them for next test
+//			Point p01 = crossedType.getNextCorner(p1, cornersUsed);
+//			polyline.addPoint(p01);
+//			takeP1IntoAccount = true;
+//			if (!intersectionExistWithAType(p01, p2, takeP1IntoAccount)) {
+//				break;
+//			} else {
+//				p1 = new Point(p01);
+//				cornersUsed.add(new Point(p01));
+//			}
+//		}
+		if (intersectionExistWithAType(p1, p2, takeP1IntoAccount)) {
+			Point p01 = crossedType.getNextCorner(p1, cornersUsed);
+			polyline.addPoint(p01);
+			cornersUsed.add(new Point(p01));
+			if (intersectionExistWithAType(p01, p2, true)) {
+				Point p02 = crossedType.getNextCorner(p01, cornersUsed);
+				polyline.addPoint(p02);
+			}
+		}
+
+		polyline.addPoint(p2);
+		return polyline;
+	}
+
+	public TypeUI getCrossedType(Point p1, Point p2) {
+		TypeUI from = (TypeUI) container.getComponentAt(p1);
+		TypeUI to = (TypeUI) container.getComponentAt(p2);
+		Line2D line = new Line2D.Double(p1, p2);
+		// loop through all types to see if we cross there inner rectangle
+		for (int r = 0; r < positions.length; r++) {
+			for (int c = 0; c < positions[r].length; c++) {
+				TypeUI posType = positions[r][c].getTypeUi();
+				// need to exclude start and finish types and empty spots
+				if (positions[r][c].isFilled() && !posType.equals(from) && !posType.equals(to)) {
+					if (posType.getInsideRectangle().intersectsLine(line)) {
+						return posType;
+					}
+
+				}
+			}
+		}
+
+		return null;// no crossed type
+	}
 
 	class Location {
 		private int row;
