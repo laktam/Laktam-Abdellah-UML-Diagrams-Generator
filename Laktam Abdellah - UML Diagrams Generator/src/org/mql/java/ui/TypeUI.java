@@ -223,7 +223,7 @@ public class TypeUI extends JPanel {
 	public static void setPlan(Plan plan) {
 		TypeUI.plan = plan;
 	}
-
+	//top center of the rectangle 
 	public Point getTopPoint() {
 		int x = 0, y = 0;
 		Point ref = getLocation();
@@ -378,6 +378,7 @@ public class TypeUI extends JPanel {
 				new Point(rect.getLocation().x, rect.getLocation().y + rect.height), // bottom left
 				new Point(rect.getLocation().x + rect.width, rect.getLocation().y + rect.height) // bottom right
 		};
+		
 		return corners;
 
 	}

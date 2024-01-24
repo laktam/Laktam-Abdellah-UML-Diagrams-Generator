@@ -48,10 +48,12 @@ public class RelationshipsPanel extends JPanel {
 				// line to closest corner (by corner i don't mean the exact corner but a little
 				// bit to the inside (with a counter local to each type))
 				// else direct line
-				if (plan.canDraw(p1, p2)) {
+				if (plan.canDraw(p1, p2, drawnTypes.get(r.getFrom().getFQName()),
+						drawnTypes.get(r.getTo().getFQName()))) {
 					g.drawLine(p1.x, p1.y, p2.x, p2.y);
-				}else {
-					Polyline polyline = plan.getPolyline(p1, p2);
+				} else {
+					Polyline polyline = plan.getPolyline(p1, p2, drawnTypes.get(r.getFrom().getFQName()),
+							drawnTypes.get(r.getTo().getFQName()));
 					g.drawPolyline(polyline.getXarray(), polyline.getYarray(), polyline.getSize());
 				}
 
