@@ -85,9 +85,6 @@
             <constructor>
                 <parameter name="this$0" type="Exemples"/>
             </constructor>
-            <method modifiers="public" name="mouseClicked" returnType="void">
-                <parameter name="e" type="MouseEvent"/>
-            </method>
             <method modifiers="public" name="mousePressed" returnType="void">
                 <parameter name="e" type="MouseEvent"/>
             </method>
@@ -98,6 +95,9 @@
                 <parameter name="e" type="MouseEvent"/>
             </method>
             <method modifiers="public" name="mouseExited" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
+            </method>
+            <method modifiers="public" name="mouseClicked" returnType="void">
                 <parameter name="e" type="MouseEvent"/>
             </method>
             <relationships>
@@ -143,16 +143,16 @@
             <method modifiers="protected" name="paintComponent" returnType="void">
                 <parameter name="g" type="Graphics"/>
             </method>
-            <method modifiers="private" name="goRihgt" returnType="void">
-                <parameter name="n" type="int"/>
-            </method>
             <method modifiers="public static" name="pause" returnType="void">
                 <parameter name="time" type="int"/>
             </method>
+            <method modifiers="private" name="loadImages" returnType="void"/>
             <method modifiers="private" name="goLeft" returnType="void">
                 <parameter name="n" type="int"/>
             </method>
-            <method modifiers="private" name="loadImages" returnType="void"/>
+            <method modifiers="private" name="goRihgt" returnType="void">
+                <parameter name="n" type="int"/>
+            </method>
             <relationships>
                 <relationship from="org.mql.java.animation.Pingouin" to="java.awt.Graphics" type="dependency"/>
                 <relationship from="org.mql.java.animation.Pingouin" to="java.lang.Runnable" type="implementation"/>
@@ -201,10 +201,10 @@
             <method modifiers="public" name="read" returnType="Object"/>
             <method modifiers="public" name="getData" returnType="Object[]"/>
             <method modifiers="public" name="getElement" returnType="Object"/>
-            <method modifiers="public" name="getCurrentConsumer" returnType="Thread"/>
-            <method modifiers="public" name="getWriteHead" returnType="int"/>
             <method modifiers="public" name="getCurrentProducer" returnType="Thread"/>
             <method modifiers="public" name="getReadHead" returnType="int"/>
+            <method modifiers="public" name="getCurrentConsumer" returnType="Thread"/>
+            <method modifiers="public" name="getWriteHead" returnType="int"/>
             <method modifiers="public" name="notifiyObservers" returnType="void"/>
             <method modifiers="public" name="setLogger" returnType="void">
                 <parameter name="logger" type="Logger"/>
@@ -333,10 +333,10 @@
             <method modifiers="private" name="createConsumers" returnType="void">
                 <parameter name="n" type="int"/>
             </method>
+            <method modifiers="private" name="userInterface" returnType="void"/>
             <method modifiers="private" name="createProducers" returnType="void">
                 <parameter name="n" type="int"/>
             </method>
-            <method modifiers="private" name="userInterface" returnType="void"/>
             <relationships>
                 <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Producer" type="aggregation"/>
                 <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
@@ -367,8 +367,8 @@
             </method>
             <method modifiers="private" name="suspend" returnType="void"/>
             <method modifiers="private" name="resume" returnType="void"/>
-            <method modifiers="public synchronized" name="signalDijkstra" returnType="void"/>
             <method modifiers="public synchronized" name="waitDijkstra" returnType="void"/>
+            <method modifiers="public synchronized" name="signalDijkstra" returnType="void"/>
             <method modifiers="public" name="setLogger" returnType="void">
                 <parameter name="logger" type="Logger"/>
             </method>
