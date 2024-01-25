@@ -27,7 +27,7 @@ public class PackageUi extends JPanel {
 	private List<PackageUi> subPackagesUi;
 	private int bottomPadding = 15;
 	private int insidePackageBottomPadding = 30;
-	private int insidePackageRightPadding = 15;
+	private int insidePackageRightPadding = 20;
 
 	public PackageUi(PackageType pckg, boolean root) {
 		this.subPackagesUi = new Vector<PackageUi>();
@@ -120,21 +120,13 @@ public class PackageUi extends JPanel {
 					header.getHeight() + typesPanel.getHeight() + padding * 2);
 		} else {
 			Dimension d = new Dimension();
+			maxW = Math.max(maxW, Math.max(header.getWidth(), typesPanel.getWidth()));// ????????????????
 			d.width = maxW * 2 + insidePackageRightPadding * 2;// + 50;
 			d.height = (maxH + insidePackageBottomPadding) * ((subPackages.size() + 1) / 2) + bottomPadding;
 			
-//			d.width += typesPanel.getWidth();
 			d.height += typesPanel.getHeight();
 			d.height += header.getHeight();
-//			for (PackageType subP : subPackages) {
-//				PackageUi subPUi = new PackageUi(subP, false);
-//				Dimension subD = subPUi.calculateSize();
-//				d.width += subD.width;
-//				d.height += subD.height;
-//			}
-//			d.width += typesPanel.getWidth() + padding * 2;// compare typespanel width with the sum of subPckgs with and
-//															// set w to max
-//			d.height += header.getHeight() + typesPanel.getHeight() + bottomPadding;
+
 			return d;
 		}
 
