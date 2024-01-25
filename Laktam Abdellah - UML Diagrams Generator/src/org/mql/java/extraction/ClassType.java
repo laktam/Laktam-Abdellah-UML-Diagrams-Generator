@@ -12,7 +12,11 @@ import org.mql.java.extraction.relationships.RelationshipEnd;
 
 public class ClassType extends SuperType {
 	
-
+	public ClassType(String fqName, String simpleName) {
+		this.fqName = fqName;
+		this.simpleName = simpleName;
+	}
+	
 	public ClassType(Class<?> c) {
 		this.type = "class";
 		this.simpleName = c.getSimpleName();

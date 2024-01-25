@@ -10,8 +10,15 @@ public class MethodType {
 	private String modifiers;
 	private List<ParameterType> parameters;
 	private Type returnType;
+	private String returnTypeString;
 
-	MethodType(String name, String modifiers, Parameter parameters[], Type returnType) {
+	public MethodType(String name, String modifiers, String returnType) {
+		this.modifiers = modifiers;
+		this.name = name;
+		this.returnTypeString = returnType;
+	}
+	
+	public MethodType(String name, String modifiers, Parameter parameters[], Type returnType) {
 		this.name = name;
 		this.modifiers = modifiers;
 		this.parameters = new Vector<ParameterType>();
@@ -39,6 +46,10 @@ public class MethodType {
 
 	public Type getReturnType() {
 		return returnType;
+	}
+	
+	public String getReturnTypeString() {
+		return returnTypeString;
 	}
 
 	public String getName() {

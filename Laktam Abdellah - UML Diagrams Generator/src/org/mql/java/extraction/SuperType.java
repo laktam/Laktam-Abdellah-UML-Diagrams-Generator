@@ -121,5 +121,18 @@ public class SuperType {
 //		}
 //		return false;
 //	}
+	public void setFields(List<FieldType> fields) {
+		this.fields = fields;
+	}
+	
+	public void setMethods(List<MethodType> methods) {
+		this.methods = methods;
+	}
+	
+	public void addField(FieldType f) {
+		fields.add(f);
+	}
+	
+	
 
 }

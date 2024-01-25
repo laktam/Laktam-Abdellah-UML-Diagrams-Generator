@@ -17,7 +17,12 @@ public class ParameterType {
 	private List<String> fqTypeArguments;
 	private Type type;
 
-	ParameterType(Parameter p) {
+	public ParameterType(String name, String type) {
+		this.name = name;
+		this.typeSimpleName = type;
+	}
+	
+	public ParameterType(Parameter p) {
 		this.name = p.getName();
 		this.simpleTypeArguments = new Vector<String>();
 		this.fqTypeArguments = new Vector<String>();
@@ -31,7 +36,7 @@ public class ParameterType {
 			this.typeSimpleName = createSimpleTypeNameAndSimpleTypeArgument(pType, "(", ")");
 			this.typeFQName = createFQTypeNameAndFQTypeArguments(pType, "(", ")");
 
-		} else {
+		} else if (type instanceof Class<?>) {
 			this.typeSimpleName = ((Class<?>) type).getSimpleName();
 			this.typeFQName = ((Class<?>) type).getName();
 		}
@@ -112,11 +117,13 @@ public class ParameterType {
 //				t += "<";//escaped in xml
 			t += open;
 			for (int i = 0; i < typeArguments.length; i++) {
-				String simpleArgumentName = ((Class<?>) typeArguments[i]).getSimpleName();
-				simpleTypeArguments.add(simpleArgumentName);
-				t += simpleArgumentName;
-				if (i != typeArguments.length - 1) {
-					t += ", ";
+				if (typeArguments[i] instanceof Class<?>) {
+					String simpleArgumentName = ((Class<?>) typeArguments[i]).getSimpleName();
+					simpleTypeArguments.add(simpleArgumentName);
+					t += simpleArgumentName;
+					if (i != typeArguments.length - 1) {
+						t += ", ";
+					}
 				}
 
 			}
@@ -134,11 +141,13 @@ public class ParameterType {
 		if (typeArguments != null) {
 			t += open;
 			for (int i = 0; i < typeArguments.length; i++) {
-				String fqTypeArgument = ((Class<?>) typeArguments[i]).getSimpleName();
-				fqTypeArguments.add(fqTypeArgument);
-				t += fqTypeArgument;
-				if (i != typeArguments.length - 1) {
-					t += ", ";
+				if (typeArguments[i] instanceof Class<?>) {
+					String fqTypeArgument = ((Class<?>) typeArguments[i]).getSimpleName();
+					fqTypeArguments.add(fqTypeArgument);
+					t += fqTypeArgument;
+					if (i != typeArguments.length - 1) {
+						t += ", ";
+					}
 				}
 
 			}

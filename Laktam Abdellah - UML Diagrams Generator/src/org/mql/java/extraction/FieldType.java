@@ -21,13 +21,19 @@ public class FieldType {
 	private boolean isParameterized = false;
 	private Type type;
 
-	FieldType(Field f) {
+	public FieldType(String name, String modifiers, String type) {
+		this.fieldName = name;
+		this.modifiers = modifiers;
+		this.typeSimpleName = type;
+	}
+	
+	public FieldType(Field f) {
 		// maybe a simple type or parameterized type
 		this.modifiers = Modifier.toString(f.getModifiers());
 		this.fieldName = f.getName();
 		this.simpleTypeArguments = new Vector<String>();
 		this.fqTypeArguments = new Vector<String>();
-		
+
 		this.type = f.getGenericType();
 		if (type instanceof ParameterizedType) {
 			this.isParameterized = true;
@@ -37,7 +43,7 @@ public class FieldType {
 //			this.typeFQName = pType.getTypeName();
 			fillSimpleTypeArguments(pType);
 			fillFQTypeArguments(pType);
-		} else {
+		} else if (type instanceof Class<?>) {
 			this.typeSimpleName = ((Class<?>) type).getSimpleName();
 			this.typeFQName = ((Class<?>) type).getName();
 		}
@@ -53,10 +59,12 @@ public class FieldType {
 //				t += "<";//escaped in xml
 			t += open;
 			for (int i = 0; i < typeArguments.length; i++) {
-				String simpleArgumentName = ((Class<?>) typeArguments[i]).getSimpleName();
-				t += simpleArgumentName;
-				if (i != typeArguments.length - 1) {
-					t += ", ";
+				if (typeArguments[i] instanceof Class<?>) {
+					String simpleArgumentName = ((Class<?>) typeArguments[i]).getSimpleName();
+					t += simpleArgumentName;
+					if (i != typeArguments.length - 1) {
+						t += ", ";
+					}
 				}
 
 			}
@@ -65,13 +73,17 @@ public class FieldType {
 		return t;
 
 	}
+
 	private void fillSimpleTypeArguments(ParameterizedType pType) {
 		Type typeArguments[] = pType.getActualTypeArguments();
 		for (Type type : typeArguments) {
-			String simpleArgumentName = ((Class<?>) type).getSimpleName();
-			this.simpleTypeArguments.add(simpleArgumentName);
+			if (type instanceof Class<?>) {
+				String simpleArgumentName = ((Class<?>) type).getSimpleName();
+				this.simpleTypeArguments.add(simpleArgumentName);
+			}
 		}
 	}
+
 	// = ParameterizedType.getTypeName();
 	public static String createFQTypeName(ParameterizedType pType, String open, String end) {
 		// (will return List if the field is List<Test>)
@@ -81,10 +93,12 @@ public class FieldType {
 		if (typeArguments != null) {
 			t += open;
 			for (int i = 0; i < typeArguments.length; i++) {
-				String fqTypeArgument = ((Class<?>) typeArguments[i]).getSimpleName();
-				t += fqTypeArgument;
-				if (i != typeArguments.length - 1) {
-					t += ", ";
+				if (typeArguments[i] instanceof Class<?>) {
+					String fqTypeArgument = ((Class<?>) typeArguments[i]).getSimpleName();
+					t += fqTypeArgument;
+					if (i != typeArguments.length - 1) {
+						t += ", ";
+					}
 				}
 
 			}
@@ -93,12 +107,14 @@ public class FieldType {
 		}
 		return t;
 	}
-	
+
 	private void fillFQTypeArguments(ParameterizedType pType) {
 		Type typeArguments[] = pType.getActualTypeArguments();
 		for (Type type : typeArguments) {
-			String simpleArgumentName = ((Class<?>) type).getName();
-			this.simpleTypeArguments.add(simpleArgumentName);
+			if (type instanceof Class<?>) {
+				String simpleArgumentName = ((Class<?>) type).getName();
+				this.simpleTypeArguments.add(simpleArgumentName);
+			}
 		}
 	}
 

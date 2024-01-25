@@ -33,7 +33,7 @@ public class PackageUi extends JPanel {
 		this.subPackagesUi = new Vector<PackageUi>();
 		this.root = root;// we draw the fqName only for the root
 		this.fqName = pckg.getFQName();
-		System.out.println(fqName);
+//		System.out.println(fqName);
 		this.simpleName = pckg.getSimpleName();
 		this.subPackages = pckg.getPackages();
 		this.types = pckg.getOnlyThisPackageTypes();
@@ -84,29 +84,22 @@ public class PackageUi extends JPanel {
 				//
 				add(subPUi);
 				subPackagesUi.add(subPUi);
-				subPUi.setLocation(d.width, d.height);
+				subPUi.setLocation(d.width, d.height);//draw in second Column
 				d.width = padding;//go to next line X
 				d.height += maxH + insidePackageBottomPadding;//go to next line Y
-//				d.height += Math.max(subPackagesUi.get(subPackagesUi.size() - 2).getHeight(),
-//						subPackagesUi.get(subPackagesUi.size() - 1).getHeight()) + insidePackageBottomPadding;
 				counter++;
 			} else {
 				add(subPUi);
 				subPackagesUi.add(subPUi);
-				subPUi.setLocation(d.width, d.height);
+				subPUi.setLocation(d.width, d.height);// draw in first column
 				d.width += maxW + insidePackageRightPadding;// go to second column in line
 				counter++;
 			}
-
-//			d.height += subD.height;//we will just place them horizontally
 		}
 
 	}
 
-//	public void setBodySize() {
-//		setSize(getSize());
-//		System.out.println(fqName + " : " + getSize().height + ", " + getSize().width);
-//	}
+
 
 	public Dimension calculateSize() {
 		// h : the height of the tallest package * lines + types + header
@@ -120,8 +113,9 @@ public class PackageUi extends JPanel {
 					header.getHeight() + typesPanel.getHeight() + padding * 2);
 		} else {
 			Dimension d = new Dimension();
-			maxW = Math.max(maxW, Math.max(header.getWidth(), typesPanel.getWidth()));// ????????????????
-			d.width = maxW * 2 + insidePackageRightPadding * 2;// + 50;
+			maxW = Math.max(maxW, Math.max(header.getWidth(), typesPanel.getWidth()));
+			d.width = maxW * 2 + insidePackageRightPadding + padding * 2;
+//			d.width = maxW * 2 + insidePackageRightPadding * 2;
 			d.height = (maxH + insidePackageBottomPadding) * ((subPackages.size() + 1) / 2) + bottomPadding;
 			
 			d.height += typesPanel.getHeight();

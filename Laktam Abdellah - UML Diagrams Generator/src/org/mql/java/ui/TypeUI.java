@@ -41,7 +41,7 @@ public class TypeUI extends JPanel {
 	private double fontHeight;
 	private static Plan plan;
 	private Position position;
-	private int cornerCounter = 15;
+	private int cornerCounter = 25;
 
 	public TypeUI(SuperType type, int row, int column) {
 		this.attributes = new Vector<String>();
@@ -69,11 +69,16 @@ public class TypeUI extends JPanel {
 			}
 
 			Type rType = m.getReturnType();
-			if (rType instanceof Class<?>) {
-				s += "): " + ((Class<?>) m.getReturnType()).getSimpleName();
-			} else if (rType instanceof ParameterizedType) {
-				s += "): " + FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">");
+			if(rType != null) {
+				if (rType instanceof Class<?>) {
+					s += "): " + ((Class<?>) m.getReturnType()).getSimpleName();
+				} else if (rType instanceof ParameterizedType) {
+					s += "): " + FieldType.createSimpleTypeName(((ParameterizedType) m.getReturnType()), "<", ">");
+				}
+			}else {
+				s+= "): " + m.getReturnTypeString();
 			}
+			
 			methods.add(s);
 		}
 		calculateSize();

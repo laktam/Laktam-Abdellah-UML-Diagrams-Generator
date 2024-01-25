@@ -20,7 +20,7 @@ public class Plan {
 
 	private Position[][] positions;
 	private JPanel container;// the plan types are drawn on this container
-
+	
 	public Plan(int rows, int columns, JPanel container) {
 		// init
 		this.container = container;
@@ -256,7 +256,6 @@ public class Plan {
 					TypeUI posType = positions[r][c].getTypeUi();
 					if (positions[r][c].isFilled() && !posType.equals(from) && !posType.equals(to)) {
 						if (posType.getInsideRectangle().intersectsLine(line)) {
-							System.out.println(posType.getType().getFQName());
 							return false;
 						}
 					}
@@ -273,16 +272,17 @@ public class Plan {
 		TypeUI crossedType = getCrossedType(p1, p2, from, to);
 		List<Point> cornersUsed = new Vector<Point>();
 
+		int c = 0;
 		while (!canDraw(p1, p2, from, to)) {
-			System.out.println(canDraw(p1, p2, from, to));
 			Point p01 = crossedType.getNextCorner(p1, cornersUsed);
 			polyline.addPoint(p01);
 			cornersUsed.add(new Point(p01));
-			if (canDraw(p01, p2, from, to)) {
+			if (canDraw(p01, p2, from, to) || c > 6) {
 				break;
 			} else {
 				p1 = p01;
 			}
+			c++;
 		}
 
 //		if (intersectionExistWithAType(p1, p2, false)) {

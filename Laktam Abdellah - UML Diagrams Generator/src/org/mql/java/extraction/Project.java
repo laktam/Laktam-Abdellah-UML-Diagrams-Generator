@@ -1,11 +1,8 @@
 package org.mql.java.extraction;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.mql.java.extraction.relationships.Relationship;
@@ -16,7 +13,7 @@ public class Project {
 	private List<PackageType> packages;
 	private List<String> internalTypes;
 
-	Project(String name) {
+	public Project(String name) {
 		this.name = name;
 		this.packages = new Vector<PackageType>();
 		this.internalTypes = new Vector<String>();
@@ -27,6 +24,10 @@ public class Project {
 			internalTypes.addAll(p.getInternalTypes());
 		}
 		return internalTypes;
+	}
+	
+	public void setPackages(List<PackageType> packages) {
+		this.packages = packages;
 	}
 
 	public List<String> getExternalTypes() {
@@ -121,6 +122,16 @@ public class Project {
 		}
 		return types;
 	}
+	
+	public SuperType getType(String fqName) {
+		List<SuperType> types = getTypes();
+		for (SuperType type : types) {
+			if (type.fqName.equals(fqName)) {
+				return type;
+			}
+		}
+		return null;
+	}
 
 	public List<Relationship> getRelationships() {
 		List<Relationship> relationships = new Vector<>();
@@ -141,16 +152,16 @@ public class Project {
 	}
 
 	public PackageType getPackage(String packageFQName) {
-//		List<PackageType> pckgs = getPackagesInOneLevel();
 		for (PackageType p : packages) {
 			if (p.getFQName().equals(packageFQName)) {
 				return p;
-			}else {
+			}else if(p.getPackage(packageFQName) != null) {
 				return p.getPackage(packageFQName);
 			}
 		}
 		return null;//doesn't exist
 	}
+	
 //	class RelationshipsComparator implements Comparator<Relationship>{
 //		//don't need order, used only for uniqueness
 //		@Override

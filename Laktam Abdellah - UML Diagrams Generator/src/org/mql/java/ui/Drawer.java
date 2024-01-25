@@ -27,6 +27,8 @@ import org.mql.java.extraction.Project;
 import org.mql.java.extraction.SuperType;
 import org.mql.java.extraction.relationships.Relationship;
 import org.mql.java.ui.Plan.Location;
+import org.mql.java.ui.packageUi.Header;
+import org.mql.java.ui.packageUi.PackageUi;
 
 public class Drawer extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -42,46 +44,50 @@ public class Drawer extends JFrame {
 		this.drawnTypes = new HashMap<String, TypeUI>();
 
 		this.panel = new JPanel();
-		panel.setLayout(null);
+//		panel.setLayout();
 		JScrollPane scrollPane = new JScrollPane(panel);
 
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		// setLayout(new FlowLayout());
+		
+//		pack();
 		add(scrollPane);
-		pack();
+//		setLocationRelativeTo(null);
+//		setVisible(true);
+//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	public void drawPackageDiagram() {
+		panel.setLayout(new FlowLayout());
+		// testing
+//		pckg = project.getPackage("org.mql.java");
+//		PackageUi pUi = new PackageUi(pckg, true);
+//		panel.add(pUi);
+
+		List<PackageType> pckgs = project.getPackages();
+		for (PackageType p : pckgs) {
+			panel.add(new PackageUi(p, true));
+		}
+//		setPreferredSize(panel.getSize());
+		setSize(panel.getMaximumSize());
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	public void drawClassDiagram(String packageFQName) {
+		panel.setLayout(null);
+
 		pckg = project.getPackage(packageFQName);
 		if (pckg != null) {
-//		List<String> fqNames = pckg.getInternalTypes();
 			List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
-//			packageTypes = packageTypes.reversed();
-//			int row = 0;
-//			int column = 0;
-//			for (SuperType type : packageTypes) {
-//				TypeUI typeUi = drawType(type, row, column);
-//				column++;
-//				if (column == 5) {
-//					column = 0;
-//					row++;
-//				}
-//
-//			}
 
 			int size = (int) Math.ceil(Math.sqrt(packageTypes.size()));
 			Plan plan = new Plan(size, size, panel);
 			this.plan = plan;
 			TypeUI.setPlan(plan);
 
-//			List<SuperType> orderedList = new Vector<SuperType>();
-//			for (SuperType type : packageTypes) {
-//				getTypesInOrder(type, orderedList);
-//			}
 			List<InterfaceType> interfaces = pckg.getInterfaces();
 			// check if the interface extends other interfaces => draw them
 			// use the first list to put every interface followed by classes that implements
@@ -96,8 +102,7 @@ public class Drawer extends JFrame {
 					}
 				}
 			}
-			// draw interfaces and classes that implements them, maybe draw subclass for
-			// each class
+			// draw interfaces and classes that implements them
 			List<ClassType> classes = pckg.getClasses();
 			for (InterfaceType i : interfaces) {
 				Location location = plan.getEmptySpot();
@@ -199,36 +204,11 @@ public class Drawer extends JFrame {
 		}
 
 		drawRelationships();
-
-//			while(it.hasNext()) {
-//				Entry<String, TypeUI> entry = it.next();
-//				String fqName = entry.getKey();
-//				SuperType drawnClass = pckg.getType(fqName);
-//				Set<Relationship> rs = pckg.getRelationshipsSet();
-//				for (Relationship r : rs) {
-//					if(r.getType().equals("extension") && r.getTo().getFQName().equals(drawnClass.getFQName())) {
-//						Location location = plan.getTypeLocation(entry.getValue());
-//						Location nearestL = plan.getNearestTo(location.getRow(), location.getColumn());
-//						TypeUI typeUi = drawType(r.getFrom().getFQName(), nearestL.getRow(), nearestL.getColumn());
-//						drawnTypes.put(r.getFrom().getFQName(), typeUi);
-//					}
-//				}
-//			}
-
-//			for (Entry<String, TypeUI> entry : entries) {
-//				
-//			}
-		//
-//			orderedList.forEach(System.out::println);
-//			System.out.println();
-//			SuperType t = project.getType("org.mql.java.semaphores.Semaphore");
-//			Set<Relationship> rs = t.getRelationshipsSet();
-//			rs.forEach((r) -> {
-//				System.out.println(" - type : " + r.getType());
-//				System.out.println(" - from : " + r.getFrom().getFQName());
-//				System.out.println(" - to : " + r.getTo().getFQName() + "\n");
-//
-//			});
+		
+		setSize(panel.getMaximumSize());
+		setLocationRelativeTo(null);
+		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	}
 
@@ -238,55 +218,6 @@ public class Drawer extends JFrame {
 		setGlassPane(rPanel);
 		getGlassPane().setVisible(true);
 	}
-
-	private void getTypesInOrder(SuperType type, List<SuperType> orderedList) {
-//		List<SuperType> packageTypes = pckg.getOnlyThisPackageTypes();
-		Set<Relationship> relationships = type.getRelationshipsSet();
-		int refRow = 0;
-		int refColumn = 0;
-		if (!orderedList.contains(type)) {
-			orderedList.add(type);
-			refRow = row;
-			refColumn = column;
-			drawType(type, row, column);
-			Location location = plan.getNearestTo(refRow, refRow);
-			row = location.getRow();
-			column = location.getColumn();
-		}
-		for (Relationship relationship : relationships) {
-			// maybe draw here
-			String fqName = relationship.getTo().getFQName();
-			if (pckg.isInternal(fqName) && !orderedList.contains(pckg.getType(fqName))) {
-				SuperType t = pckg.getType(fqName);
-				orderedList.add(t);
-				drawType(t, row, column);
-				Location location = plan.getNearestTo(refRow, refRow);
-				row = location.getRow();
-				column = location.getColumn();
-			}
-		}
-
-		Location location = plan.getEmptySpot();
-		row = location.getRow();
-		column = location.getColumn();
-//		column++;
-//		if(column > plan.getPositions()[row].length) {
-//			column = 0;
-//			row++;
-//		}
-		for (Relationship relationship : relationships) {
-			// and draw here
-			String fqName = relationship.getTo().getFQName();
-			if (pckg.isInternal(fqName)) {
-				SuperType t = pckg.getType(relationship.getTo().getFQName());
-				getTypesInOrder(t, orderedList);
-			}
-		}
-	}
-
-//	public boolean isDrawn(String fqName) {
-//		return false;
-//	}
 
 	private TypeUI drawType(SuperType type, int row, int column) {
 		if (!isDrawn(type.getFQName())) {

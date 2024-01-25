@@ -9,6 +9,11 @@ public class Relationship {
 	private RelationshipEnd from;
 	private RelationshipEnd to;
 
+	public Relationship(String type, String from, String to) {
+		this.type = type;
+		this.from = new RelationshipEnd("", from, "from");//from.substring(from.lastIndexOf("." + 1))
+		this.to = new RelationshipEnd("", to, "to");
+	}
 	// maybe delete source because it is always the class that hold the relationship
 	public Relationship(String type, RelationshipEnd from, RelationshipEnd to) {
 		this.type = type;

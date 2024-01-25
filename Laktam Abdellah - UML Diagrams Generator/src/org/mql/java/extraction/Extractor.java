@@ -2,11 +2,8 @@ package org.mql.java.extraction;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 
 import org.mql.java.extraction.relationships.RelationshipDetector;
@@ -48,7 +45,7 @@ public class Extractor {
 	}
 
 	// pass bin.listFiles
-	//create packages (mapped to every child folder in the bin directory)
+	// create packages (mapped to every child folder in the bin directory)
 //	private List<PackageType> createPackagesTree(File files[]) {
 //		List<PackageType> packagesTree = new Vector<>();
 //		for (File f : files) {
@@ -62,8 +59,8 @@ public class Extractor {
 //		}
 //		return packagesTree;
 //	}
-	
-	//this one doesn't create a package for every folder in the bin
+
+	// this one doesn't create a package for every folder in the bin
 	private List<PackageType> createPackagesTree(File files[]) {
 		List<PackageType> packagesTree = new Vector<>();
 		for (File f : files) {
@@ -73,12 +70,12 @@ public class Extractor {
 					// add subpackages
 					if (f.listFiles().length > 0 && containsDirectory(f)) // is not empty and contains at least a
 																			// directory
-						//here the call for createPackageTree return the subTree and so on ...
+						// here the call for createPackageTree return the subTree and so on ...
 						p.addPackages(createPackagesTree(f.listFiles()));
 					packagesTree.add(p);
-				}else {
-					//if the directory doesn't contain class files 
-					//we don't create package type for it but we continue in the tree
+				} else {
+					// if the directory doesn't contain class files
+					// we don't create package type for it but we continue in the tree
 					packagesTree.addAll(createPackagesTree(f.listFiles()));
 				}
 			}
@@ -150,8 +147,11 @@ public class Extractor {
 		RelationshipDetector.detectRelationShips(project.getTypes());
 	}
 
+	//writing and drawing
 	public static void main(String[] args) {
-		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p05-MultiThreading");
+		Project project = new Extractor("D:\\MQL\\Java\\MqlWorkSpace").extract("p05-MultiThreading");//p05-MultiThreading 
+		//p03-Annotations and Reflections
+		//p04-XML parsers
 		System.out.println(project);
 
 		Parser.write(project, "resources/classDiagrams.xml");
@@ -161,17 +161,29 @@ public class Extractor {
 			System.out.println(" - type : " + r.getType());
 			System.out.println(" - from : " + r.getFrom().getFQName());
 			System.out.println(" - to : " + r.getTo().getFQName() + "\n");
-
 		});
 
 		System.out.println();
 		System.out.println("** Internal types **");
 		project.getInternalTypes().forEach(System.out::println);
 		System.out.println();
+
 		System.out.println("** External types **");
 		project.getExternalTypes().forEach(System.out::println);
 
-//		Drawer drawer = new Drawer(project);
-//		drawer.drawClassDiagram("org.mql.java.animation");
+		Drawer drawer = new Drawer(project);
+		drawer.drawPackageDiagram();
+//		drawer.drawClassDiagram("org.mql.java.semaphores");//
 	}
+	
+	
+	
+	//reading from xml file and drawing
+//	public static void main(String[] args) {
+//		Project project = Parser.read("resources/classDiagrams.xml");
+//		System.out.println(project);
+//		Drawer drawer = new Drawer(project);
+////		drawer.drawPackageDiagram();
+//		drawer.drawClassDiagram("org.mql.java.semaphores");
+//	}
 }

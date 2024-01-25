@@ -22,8 +22,8 @@ public class RelationshipDetector {
 		// TODO Auto-generated constructor stub
 	}
 
-	// check fields for Objects : agregation or composition
-	// it is just an agregation if we can create an object without creating the
+	// check fields for Objects : aggregation or composition
+	// it is just an aggregation if we can create an object without creating the
 	// field object
 	// check all methods for return type and parameteres "utilisation"
 	// setter methods ? maybe check for there parameters or maybe constructor
@@ -33,7 +33,7 @@ public class RelationshipDetector {
 			RelationshipEnd thisEnd = new RelationshipEnd(type.getSimpleName(), type.getFQName(), "from");
 
 			List<FieldType> fields = type.getFields();
-			// agregation : if a field's type is complex
+			// aggregation : if a field's type is complex
 			for (FieldType f : fields) {
 
 				// if it's a collection we need to add the Types in <__>
@@ -44,7 +44,7 @@ public class RelationshipDetector {
 							Class<?> c = (Class<?>) typeArgument;
 							// we need to test if the argument is not of type wrapper class
 							if (!isWrapper(c) && !c.equals(String.class)) {
-								type.addRelationship(new Relationship("agregation", thisEnd,
+								type.addRelationship(new Relationship("aggregation", thisEnd,
 										new RelationshipEnd(c.getSimpleName(), c.getName(), "to")));
 							}
 						}
@@ -52,11 +52,11 @@ public class RelationshipDetector {
 				} else if (!f.isSimple()) {
 					// if is an array
 					if (f.isArray()) {
-						type.addRelationship(new Relationship("agregation", thisEnd,
+						type.addRelationship(new Relationship("aggregation", thisEnd,
 								new RelationshipEnd(f.getArrayTypeSimpleName(), f.getArrayTypeFQName(), "to")));
 					} else {
 
-						type.addRelationship(new Relationship("agregation", thisEnd,
+						type.addRelationship(new Relationship("aggregation", thisEnd,
 								new RelationshipEnd(f.getTypeSimpleName(), f.getTypeFQName(), "to")));
 
 					}
@@ -78,7 +78,7 @@ public class RelationshipDetector {
 					// if we have List<Type> then the dependence must be to List and Type
 					if (p.isCollection()) {
 						// add raw type
-						type.addRelationship(new Relationship("agregation", thisEnd,
+						type.addRelationship(new Relationship("aggregation", thisEnd,
 								new RelationshipEnd(p.getTypeSimpleName(), p.getTypeFQName(), "to")));
 						// p.getTypeSimpleName(), p.getTypeFQName() need to return raw type name
 						// add Type arguments
@@ -86,7 +86,7 @@ public class RelationshipDetector {
 						if (typeArguments != null) {
 							for (Type typeArgument : typeArguments) {
 								Class<?> c = (Class<?>) typeArgument;
-								type.addRelationship(new Relationship("agregation", thisEnd,
+								type.addRelationship(new Relationship("aggregation", thisEnd,
 										new RelationshipEnd(c.getSimpleName(), c.getName(), "to")));
 							}
 						}

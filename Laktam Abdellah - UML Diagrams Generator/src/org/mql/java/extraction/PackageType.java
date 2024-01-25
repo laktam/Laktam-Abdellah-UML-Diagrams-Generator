@@ -15,7 +15,7 @@ public class PackageType {
 	private List<EnumerationType> enumerations;
 	private List<String> internalTypes;
 
-	PackageType(String fqName) {
+	public PackageType(String fqName) {
 		this.fqName = fqName;
 		this.packages = new Vector<PackageType>();
 		this.classes = new Vector<ClassType>();
@@ -24,7 +24,7 @@ public class PackageType {
 		this.annotations = new Vector<AnnotationType>();
 		this.internalTypes = new Vector<String>();
 	}
-	
+
 	public List<String> getInternalTypes() {
 		List<SuperType> types = getTypes();
 		for (SuperType type : types) {
@@ -32,18 +32,16 @@ public class PackageType {
 		}
 		return internalTypes;
 	}
-	
+
 	public SuperType getType(String fqName) {
 		List<SuperType> types = getTypes();
 		for (SuperType t : types) {
-			if(t.getFQName().equals(fqName)) {
+			if (t.getFQName().equals(fqName)) {
 				return t;
 			}
 		}
 		return null;
 	}
-	
-	
 
 	@Override
 	public String toString() {
@@ -102,10 +100,10 @@ public class PackageType {
 		}
 		// delegate to subpackages
 		if (!packages.isEmpty()) {
-			if(!"".equals(s)) {//so i don't add indentation when the superPackage is empty
-				indentation += "\t";	
+			if (!"".equals(s)) {// so i don't add indentation when the superPackage is empty
+				indentation += "\t";
 			}
-			
+
 			for (PackageType p : packages) {
 				s += p.printFullTree(indentation);
 			}
@@ -166,6 +164,11 @@ public class PackageType {
 		return fqName;
 	}
 
+	public String getSimpleName() {
+		int i = fqName.lastIndexOf(".");
+		return fqName.substring(i + 1);
+	}
+
 	public void setName(String name) {
 		this.fqName = name;
 	}
@@ -184,15 +187,22 @@ public class PackageType {
 	public boolean containTypes() {
 		return !(classes.isEmpty() && interfaces.isEmpty() && annotations.isEmpty() && enumerations.isEmpty());
 	}
+
+	
 	
 	public PackageType getPackage(String packageFQName) {
 		for (PackageType p : packages) {
 			if (p.getFQName().equals(packageFQName)) {
 				return p;
-			}else {
+			} else if (p.getPackage(packageFQName) != null) {
 				return p.getPackage(packageFQName);
 			}
 		}
+//		for (PackageType p : packages) {
+//			if() {
+//				return p.getPackage(packageFQName);
+//			}
+//		}
 		return null;
 	}
 
@@ -208,7 +218,8 @@ public class PackageType {
 		}
 		packages.removeAll(toDelete);
 	}
-	//no types from subPackages
+
+	// no types from subPackages
 	public List<SuperType> getOnlyThisPackageTypes() {
 		List<SuperType> types = new Vector<SuperType>();
 		types.addAll(classes);
@@ -216,8 +227,18 @@ public class PackageType {
 		types.addAll(annotations);
 		types.addAll(enumerations);
 		return types;
-	} 
-	
+	}
+
+	public boolean isInternal(String fqName) {
+		List<SuperType> types = getOnlyThisPackageTypes();
+		for (SuperType type : types) {
+			if (type.getFQName().equals(fqName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<SuperType> getTypes() {
 		List<SuperType> types = new Vector<SuperType>();
 		types.addAll(classes);
@@ -241,14 +262,22 @@ public class PackageType {
 		}
 		return relationships;
 	}
-	//this use redefined equals() and hashcode() 
-		public Set<Relationship> getRelationshipsSet() {
-			List<Relationship> relationships = getRelationships();
-			Set<Relationship> relationshipsSet = new HashSet<Relationship>();
-			for (Relationship r : relationships) {
-				relationshipsSet.add(r);
-			}
-			return relationshipsSet;
-		}
 
+	// this use redefined equals() and hashcode()
+	public Set<Relationship> getRelationshipsSet() {
+		List<Relationship> relationships = getRelationships();
+		Set<Relationship> relationshipsSet = new HashSet<Relationship>();
+		for (Relationship r : relationships) {
+			relationshipsSet.add(r);
+		}
+		return relationshipsSet;
+	}
+	public void setClasses(List<ClassType> classes) {
+		this.classes = classes;
+	}
+	
+	public void setInterfaces(List<InterfaceType> interfaces) {
+		this.interfaces = interfaces;
+	}
+	 
 }
