@@ -1,135 +1,412 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<classDiagrams xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="classDiagram.xsd">
-    <classDiagram name="org.mql.java.actions">
-        <class name="EditAction">
-            <method modifiers="public" name="cut" returnType="String"/>
-            <method modifiers="public" name="notUsed" returnType="String"/>
-            <method modifiers="public" name="paste" returnType="String"/>
-            <method modifiers="public" name="copy" returnType="String"/>
-        </class>
-        <class name="FileAction">
-            <method modifiers="public" name="saveAs" returnType="String"/>
-            <method modifiers="public" name="exit" returnType="String"/>
-            <method modifiers="public" name="save" returnType="String"/>
-            <method modifiers="public" name="open" returnType="String"/>
-            <method modifiers="public" name="newFile" returnType="String"/>
-        </class>
-    </classDiagram>
-    <classDiagram name="org.mql.java.models">
-        <class name="Author">
-            <field modifiers="private" name="id" type="int"/>
-            <field modifiers="private" name="name" type="String"/>
-            <field modifiers="private" name="yearBorn" type="int"/>
-            <field modifiers="private" name="technology" type="String"/>
+<classDiagrams name="p05-MultiThreading">
+    <classDiagram name="org.mql.java">
+        <class name="Buffer">
+            <field modifiers="private" name="data" type="Object[]"/>
+            <field modifiers="private" name="readHead" type="int"/>
+            <field modifiers="private" name="writeHead" type="int"/>
             <constructor>
-                <parameter name="id" type="int"/>
-                <parameter name="name" type="String"/>
-                <parameter name="yearBorn" type="int"/>
-                <parameter name="technology" type="String"/>
+                <parameter name="size" type="int"/>
             </constructor>
-            <method modifiers="public" name="getYearBorn" returnType="int"/>
-            <method modifiers="public" name="getTechnology" returnType="String"/>
-            <method modifiers="public" name="setTechnology" returnType="void">
-                <parameter name="technology" type="String"/>
+            <method modifiers="public synchronized" name="write" returnType="void">
+                <parameter name="element" type="Object"/>
             </method>
-            <method modifiers="public" name="setYearBorn" returnType="void">
-                <parameter name="yearBorn" type="int"/>
-            </method>
-            <method modifiers="public" name="setId" returnType="void">
-                <parameter name="id" type="int"/>
-            </method>
-            <method modifiers="public" name="getName" returnType="String"/>
-            <method modifiers="public" name="toString" returnType="String"/>
-            <method modifiers="public" name="setName" returnType="void">
+            <method modifiers="public synchronized" name="read" returnType="Object"/>
+            <method modifiers="public synchronized" name="getData" returnType="Object[]"/>
+            <relationships/>
+        </class>
+        <class name="Consumer">
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <constructor>
                 <parameter name="name" type="String"/>
+                <parameter name="buffer" type="Buffer"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.Consumer" to="org.mql.java.Buffer" type="aggregation"/>
+                <relationship from="org.mql.java.Consumer" to="java.lang.Thread" type="extension"/>
+            </relationships>
+        </class>
+        <class name="Context">
+            <method modifiers="public static" name="print" returnType="void">
+                <parameter name="msg" type="String"/>
             </method>
-            <method modifiers="public" name="getId" returnType="int"/>
+            <method modifiers="public static" name="pause" returnType="void">
+                <parameter name="time" type="int"/>
+            </method>
+            <relationships/>
         </class>
-        <class name="Document">
-            <field modifiers="private" name="id" type="int"/>
-            <field modifiers="private" name="title" type="String"/>
-            <field modifiers="private" name="yearPublished" type="int"/>
-            <field modifiers="private" name="publisher" type="String"/>
-        </class>
-    </classDiagram>
-    <classDiagram name="org.mql.java.reflection">
         <class name="Examples">
-            <method modifiers="" name="exp03" returnType="void"/>
-            <method modifiers="" name="exp06" returnType="void"/>
-            <method modifiers="" name="exp04" returnType="void"/>
-            <method modifiers="" name="exp07" returnType="void"/>
-            <method modifiers="" name="exp01" returnType="void"/>
-            <method modifiers="" name="exp08" returnType="void"/>
-            <method modifiers="" name="exp02" returnType="void"/>
-            <method modifiers="" name="exp05" returnType="void"/>
             <method modifiers="public static" name="main" returnType="void">
                 <parameter name="args" type="String[]"/>
             </method>
+            <method modifiers="" name="exp01" returnType="void"/>
+            <method modifiers="" name="exp03" returnType="void"/>
+            <method modifiers="" name="exp02" returnType="void"/>
+            <relationships/>
         </class>
-        <class name="FormGenerator">
-            <method modifiers="public static" name="generate" returnType="Form">
-                <parameter name="source" type="Object"/>
-            </method>
+        <class name="IntWriter">
+            <field modifiers="private" name="sharedResource" type="List(Integer)"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+                <parameter name="sharedResource" type="List(Integer)"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.IntWriter" to="java.lang.Thread" type="extension"/>
+            </relationships>
         </class>
-        <class name="PackageExplorer">
-            <method modifiers="public static" name="scan" returnType="String[]">
-                <parameter name="packageName" type="String"/>
-            </method>
+        <class name="Processus">
+            <constructor>
+                <parameter name="name" type="String"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.Processus" to="java.lang.Thread" type="extension"/>
+            </relationships>
+        </class>
+        <class name="Producer">
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+                <parameter name="buffer" type="Buffer"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.Producer" to="java.lang.Thread" type="extension"/>
+                <relationship from="org.mql.java.Producer" to="org.mql.java.Buffer" type="aggregation"/>
+            </relationships>
         </class>
     </classDiagram>
-    <classDiagram name="org.mql.java.ui">
-        <class name="Form">
-            <field modifiers="private static final" name="serialVersionUID" type="long"/>
-            <field modifiers="private" name="labelSize" type="int"/>
-            <field modifiers="private" name="container" type="JPanel"/>
+    <classDiagram name="org.mql.java.animation">
+        <class name="ScreenListener">
+            <field modifiers="private" name="counter" type="int"/>
+            <field modifiers="final" name="this$0" type="Exemples"/>
             <constructor>
-                <parameter name="title" type="String"/>
-                <parameter name="labelSize" type="int"/>
+                <parameter name="this$0" type="Exemples"/>
             </constructor>
-            <method modifiers="public" name="add" returnType="void">
-                <parameter name="title" type="String"/>
-                <parameter name="size" type="int"/>
+            <method modifiers="public" name="mouseClicked" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
             </method>
-        </class>
-        <class name="LabeledTextField">
-            <field modifiers="private static final" name="serialVersionUID" type="long"/>
-            <constructor>
-                <parameter name="label" type="String"/>
-                <parameter name="size" type="int"/>
-            </constructor>
-            <constructor>
-                <parameter name="label" type="String"/>
-                <parameter name="size" type="int"/>
-                <parameter name="labelSize" type="int"/>
-            </constructor>
-        </class>
-        <class name="ItemListener">
-            <field modifiers="private" name="controller" type="Object"/>
-            <field modifiers="private" name="method" type="Method"/>
-            <field modifiers="final" name="this$0" type="Menu"/>
-            <constructor>
-                <parameter name="this$0" type="Menu"/>
-                <parameter name="controller" type="Object"/>
-                <parameter name="method" type="Method"/>
-            </constructor>
-            <method modifiers="public" name="actionPerformed" returnType="void">
-                <parameter name="e" type="ActionEvent"/>
+            <method modifiers="public" name="mousePressed" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
             </method>
+            <method modifiers="public" name="mouseReleased" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
+            </method>
+            <method modifiers="public" name="mouseEntered" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
+            </method>
+            <method modifiers="public" name="mouseExited" returnType="void">
+                <parameter name="e" type="MouseEvent"/>
+            </method>
+            <relationships>
+                <relationship from="org.mql.java.animation.Exemples$ScreenListener" to="java.awt.event.MouseEvent" type="dependency"/>
+                <relationship from="org.mql.java.animation.Exemples$ScreenListener" to="java.awt.event.MouseListener" type="implementation"/>
+                <relationship from="org.mql.java.animation.Exemples$ScreenListener" to="org.mql.java.animation.Exemples" type="aggregation"/>
+            </relationships>
         </class>
-        <class name="Menu">
+        <class name="Exemples">
             <field modifiers="private static final" name="serialVersionUID" type="long"/>
-            <field modifiers="private" name="iconPath" type="String"/>
+            <field modifiers="private" name="screen" type="JPanel"/>
+            <method modifiers="public static" name="main" returnType="void">
+                <parameter name="args" type="String[]"/>
+            </method>
+            <method modifiers="private" name="userInterface" returnType="void"/>
+            <method modifiers="" name="exp01" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.animation.Exemples" to="javax.swing.JPanel" type="aggregation"/>
+                <relationship from="org.mql.java.animation.Exemples" to="javax.swing.JFrame" type="extension"/>
+            </relationships>
+        </class>
+        <class name="Pingouin">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <field modifiers="private" name="runner" type="Thread"/>
+            <field modifiers="private" name="x" type="int"/>
+            <field modifiers="private" name="y" type="int"/>
+            <field modifiers="private" name="width" type="int"/>
+            <field modifiers="private" name="height" type="int"/>
+            <field modifiers="private" name="src" type="String[]"/>
+            <field modifiers="private" name="path" type="String"/>
             <field modifiers="private" name="type" type="String"/>
+            <field modifiers="private" name="images" type="Image[]"/>
+            <field modifiers="private" name="current" type="int"/>
+            <field modifiers="private" name="step" type="int"/>
             <constructor>
-                <parameter name="titles" type="String[][]"/>
+                <parameter name="name" type="String"/>
+                <parameter name="x" type="int"/>
+                <parameter name="y" type="int"/>
             </constructor>
-            <method modifiers="public" name="add" returnType="void">
-                <parameter name="controller" type="Object"/>
+            <method modifiers="public" name="run" returnType="void"/>
+            <method modifiers="public" name="start" returnType="void"/>
+            <method modifiers="private" name="stop" returnType="void"/>
+            <method modifiers="protected" name="paintComponent" returnType="void">
+                <parameter name="g" type="Graphics"/>
             </method>
-            <method modifiers="public" name="add" returnType="void">
-                <parameter name="t" type="String[]"/>
+            <method modifiers="private" name="goRihgt" returnType="void">
+                <parameter name="n" type="int"/>
             </method>
+            <method modifiers="public static" name="pause" returnType="void">
+                <parameter name="time" type="int"/>
+            </method>
+            <method modifiers="private" name="goLeft" returnType="void">
+                <parameter name="n" type="int"/>
+            </method>
+            <method modifiers="private" name="loadImages" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.animation.Pingouin" to="java.awt.Graphics" type="dependency"/>
+                <relationship from="org.mql.java.animation.Pingouin" to="java.lang.Runnable" type="implementation"/>
+                <relationship from="org.mql.java.animation.Pingouin" to="java.lang.Thread" type="aggregation"/>
+                <relationship from="org.mql.java.animation.Pingouin" to="java.awt.Image" type="aggregation"/>
+                <relationship from="org.mql.java.animation.Pingouin" to="javax.swing.JPanel" type="extension"/>
+            </relationships>
         </class>
+        <class name="Task">
+            <field modifiers="private" name="runner" type="Thread"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <method modifiers="public" name="start" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.animation.Task" to="java.lang.Thread" type="aggregation"/>
+                <relationship from="org.mql.java.animation.Task" to="java.lang.Runnable" type="implementation"/>
+            </relationships>
+        </class>
+    </classDiagram>
+    <classDiagram name="org.mql.java.semaphores">
+        <class name="Buffer">
+            <field modifiers="private" name="data" type="Object[]"/>
+            <field modifiers="private" name="readHead" type="int"/>
+            <field modifiers="private" name="writeHead" type="int"/>
+            <field modifiers="private" name="logger" type="Logger"/>
+            <field modifiers="private" name="observers" type="List(Observer)"/>
+            <field modifiers="private" name="currentWritePosition" type="int"/>
+            <field modifiers="private" name="currentReadPosition" type="int"/>
+            <field modifiers="private" name="currentProducer" type="Thread"/>
+            <field modifiers="private" name="currentConsumer" type="Thread"/>
+            <field modifiers="private" name="element" type="Object"/>
+            <constructor>
+                <parameter name="size" type="int"/>
+            </constructor>
+            <method modifiers="private" name="log" returnType="void">
+                <parameter name="msg" type="String"/>
+            </method>
+            <method modifiers="public" name="add" returnType="void">
+                <parameter name="observer" type="Observer"/>
+            </method>
+            <method modifiers="public" name="write" returnType="void">
+                <parameter name="element" type="Object"/>
+            </method>
+            <method modifiers="public" name="read" returnType="Object"/>
+            <method modifiers="public" name="getData" returnType="Object[]"/>
+            <method modifiers="public" name="getElement" returnType="Object"/>
+            <method modifiers="public" name="getCurrentConsumer" returnType="Thread"/>
+            <method modifiers="public" name="getWriteHead" returnType="int"/>
+            <method modifiers="public" name="getCurrentProducer" returnType="Thread"/>
+            <method modifiers="public" name="getReadHead" returnType="int"/>
+            <method modifiers="public" name="notifiyObservers" returnType="void"/>
+            <method modifiers="public" name="setLogger" returnType="void">
+                <parameter name="logger" type="Logger"/>
+            </method>
+            <method modifiers="public" name="getCurrentReadPosition" returnType="int"/>
+            <method modifiers="public" name="getCurrentWritePosition" returnType="int"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.Buffer" to="org.mql.java.semaphores.Observer" type="dependency"/>
+                <relationship from="org.mql.java.semaphores.Buffer" to="org.mql.java.semaphores.Observer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Buffer" to="java.lang.Thread" type="dependency"/>
+                <relationship from="org.mql.java.semaphores.Buffer" to="org.mql.java.semaphores.Logger" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Buffer" to="java.lang.Thread" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Buffer" to="org.mql.java.semaphores.Logger" type="dependency"/>
+            </relationships>
+        </class>
+        <class name="ConsoleLogger">
+            <method modifiers="public" name="log" returnType="void">
+                <parameter name="level" type="String"/>
+                <parameter name="msg" type="String"/>
+            </method>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.ConsoleLogger" to="org.mql.java.semaphores.Logger" type="implementation"/>
+            </relationships>
+        </class>
+        <class name="ConsoleObserver">
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <constructor>
+                <parameter name="buffer" type="Buffer"/>
+            </constructor>
+            <method modifiers="public" name="update" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.ConsoleObserver" to="org.mql.java.semaphores.Observer" type="implementation"/>
+                <relationship from="org.mql.java.semaphores.ConsoleObserver" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
+            </relationships>
+        </class>
+        <class name="Consumer">
+            <field modifiers="private" name="m" type="Semaphore"/>
+            <field modifiers="private" name="empty" type="Semaphore"/>
+            <field modifiers="private" name="full" type="Semaphore"/>
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+                <parameter name="buffer" type="Buffer"/>
+                <parameter name="m" type="Semaphore"/>
+                <parameter name="empty" type="Semaphore"/>
+                <parameter name="full" type="Semaphore"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <method modifiers="public" name="toString" returnType="String"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.Consumer" to="org.mql.java.semaphores.Semaphore" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Consumer" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Consumer" to="java.lang.Thread" type="extension"/>
+            </relationships>
+        </class>
+        <class name="FileLogger">
+            <field modifiers="private" name="source" type="String"/>
+            <field modifiers="private" name="messages" type="List(String)"/>
+            <constructor>
+                <parameter name="source" type="String"/>
+            </constructor>
+            <method modifiers="public" name="log" returnType="void">
+                <parameter name="level" type="String"/>
+                <parameter name="msg" type="String"/>
+            </method>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.FileLogger" to="org.mql.java.semaphores.Logger" type="implementation"/>
+            </relationships>
+        </class>
+        <class name="PanelObserver">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <field modifiers="private" name="margin" type="int"/>
+            <field modifiers="private" name="size" type="int"/>
+            <field modifiers="private" name="length" type="int"/>
+            <constructor>
+                <parameter name="buffer" type="Buffer"/>
+                <parameter name="size" type="int"/>
+            </constructor>
+            <method modifiers="public" name="update" returnType="void"/>
+            <method modifiers="public" name="getPreferredSize" returnType="Dimension"/>
+            <method modifiers="protected" name="paintComponent" returnType="void">
+                <parameter name="g" type="Graphics"/>
+            </method>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.PanelObserver" to="javax.swing.JPanel" type="extension"/>
+                <relationship from="org.mql.java.semaphores.PanelObserver" to="java.awt.Dimension" type="dependency"/>
+                <relationship from="org.mql.java.semaphores.PanelObserver" to="org.mql.java.semaphores.Observer" type="implementation"/>
+                <relationship from="org.mql.java.semaphores.PanelObserver" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.PanelObserver" to="java.awt.Graphics" type="dependency"/>
+            </relationships>
+        </class>
+        <class name="Producer">
+            <field modifiers="private" name="m" type="Semaphore"/>
+            <field modifiers="private" name="empty" type="Semaphore"/>
+            <field modifiers="private" name="full" type="Semaphore"/>
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+                <parameter name="buffer" type="Buffer"/>
+                <parameter name="m" type="Semaphore"/>
+                <parameter name="empty" type="Semaphore"/>
+                <parameter name="full" type="Semaphore"/>
+            </constructor>
+            <method modifiers="public" name="run" returnType="void"/>
+            <method modifiers="public" name="toString" returnType="String"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.Producer" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Producer" to="java.lang.Thread" type="extension"/>
+                <relationship from="org.mql.java.semaphores.Producer" to="org.mql.java.semaphores.Semaphore" type="aggregation"/>
+            </relationships>
+        </class>
+        <class name="ProducerConsumer">
+            <field modifiers="private static final" name="serialVersionUID" type="long"/>
+            <field modifiers="private" name="buffer" type="Buffer"/>
+            <field modifiers="private" name="producers" type="Producer[]"/>
+            <field modifiers="private" name="consumers" type="Consumer[]"/>
+            <field modifiers="private" name="m" type="Semaphore"/>
+            <field modifiers="private" name="empty" type="Semaphore"/>
+            <field modifiers="private" name="full" type="Semaphore"/>
+            <field modifiers="private" name="observer" type="PanelObserver"/>
+            <method modifiers="public static" name="main" returnType="void">
+                <parameter name="args" type="String[]"/>
+            </method>
+            <method modifiers="private" name="init" returnType="void"/>
+            <method modifiers="private" name="createConsumers" returnType="void">
+                <parameter name="n" type="int"/>
+            </method>
+            <method modifiers="private" name="createProducers" returnType="void">
+                <parameter name="n" type="int"/>
+            </method>
+            <method modifiers="private" name="userInterface" returnType="void"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Producer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Buffer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Consumer" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.Semaphore" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="javax.swing.JFrame" type="extension"/>
+                <relationship from="org.mql.java.semaphores.ProducerConsumer" to="org.mql.java.semaphores.PanelObserver" type="aggregation"/>
+            </relationships>
+        </class>
+        <class name="Semaphore">
+            <field modifiers="private" name="name" type="String"/>
+            <field modifiers="private" name="value" type="int"/>
+            <field modifiers="private" name="waitingThreadList" type="ThreadList"/>
+            <field modifiers="private" name="logger" type="Logger"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+            </constructor>
+            <constructor>
+                <parameter name="name" type="String"/>
+                <parameter name="value" type="int"/>
+            </constructor>
+            <method modifiers="public" name="log" returnType="void">
+                <parameter name="level" type="String"/>
+                <parameter name="msg" type="String"/>
+            </method>
+            <method modifiers="public synchronized" name="init" returnType="void">
+                <parameter name="value" type="int"/>
+            </method>
+            <method modifiers="private" name="suspend" returnType="void"/>
+            <method modifiers="private" name="resume" returnType="void"/>
+            <method modifiers="public synchronized" name="signalDijkstra" returnType="void"/>
+            <method modifiers="public synchronized" name="waitDijkstra" returnType="void"/>
+            <method modifiers="public" name="setLogger" returnType="void">
+                <parameter name="logger" type="Logger"/>
+            </method>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.Semaphore" to="org.mql.java.semaphores.ThreadList" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Semaphore" to="org.mql.java.semaphores.Logger" type="aggregation"/>
+                <relationship from="org.mql.java.semaphores.Semaphore" to="org.mql.java.semaphores.Logger" type="dependency"/>
+            </relationships>
+        </class>
+        <class name="ThreadList">
+            <field modifiers="private" name="name" type="String"/>
+            <field modifiers="private" name="list" type="List(Thread)"/>
+            <constructor>
+                <parameter name="name" type="String"/>
+            </constructor>
+            <method modifiers="public" name="getName" returnType="String"/>
+            <method modifiers="public synchronized" name="remove" returnType="void">
+                <parameter name="p" type="Thread"/>
+            </method>
+            <method modifiers="public synchronized" name="add" returnType="void">
+                <parameter name="p" type="Thread"/>
+            </method>
+            <method modifiers="public" name="getList" returnType="List(Thread)"/>
+            <relationships>
+                <relationship from="org.mql.java.semaphores.ThreadList" to="java.lang.Thread" type="dependency"/>
+                <relationship from="org.mql.java.semaphores.ThreadList" to="java.lang.Thread" type="aggregation"/>
+            </relationships>
+        </class>
+        <interface name="Logger">
+            <method modifiers="public abstract" name="log" returnType="void">
+                <parameter name="level" type="String"/>
+                <parameter name="msg" type="String"/>
+            </method>
+            <relationships/>
+        </interface>
+        <interface name="Observer">
+            <method modifiers="public abstract" name="update" returnType="void"/>
+            <relationships/>
+        </interface>
     </classDiagram>
 </classDiagrams>
